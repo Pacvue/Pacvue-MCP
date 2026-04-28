@@ -13,12 +13,11 @@ One MCP server, two capabilities, no per-tool wiring.
 
 Both capabilities cover all retailers your Pacvue account has access to (Amazon, Walmart, Instacart, Amazon DSP, Amazon Commerce, Bol, Chewy, Citrus, Commerce-Walmart, Criteo, DoorDash, eBay, Kroger, Mercado, Sam's Club, Target, ...). New retailers and new fields are picked up automatically — no MCP-side changes.
 
-## Endpoints
+## Endpoint
 
-| Environment    | Gateway URL                       |
-| -------------- | --------------------------------- |
-| Production     | `https://mcp.pacvue.com/mcp`      |
-| Staging / Test | `https://mcp-test.pacvue.com/mcp` |
+```
+https://mcp.pacvue.com/mcp
+```
 
 All 8 tools are exposed under one server entry. You do not configure them individually.
 
@@ -55,7 +54,7 @@ To revoke a session, go to **Settings → Connected Apps** in the Pacvue Console
 
 ## Client setup
 
-Replace `https://mcp.pacvue.com/mcp` with the staging URL if appropriate. The `Authorization` header takes the **raw token** — no `Bearer` prefix.
+The `Authorization` header takes the **raw token** — no `Bearer` prefix.
 
 ### Cursor
 
@@ -269,12 +268,3 @@ The agent skipped a required filter or config. Required fields are enforced upst
 | API tokens per user     | 50                   |
 | API token max lifetime  | 2 years              |
 | OAuth refresh token     | 7-day sliding window |
-
-## Further reading
-
-Pacvue-internal design docs (Confluence, login required):
-
-- [MCP Authorization](https://pacvue-enterprise.atlassian.net/wiki/spaces/PRD/pages/1409974330/MCP+Authorization)
-- [MCP Gateway](https://pacvue-enterprise.atlassian.net/wiki/spaces/PRD/pages/1410334861/MCP+Gateway)
-- [Report MCP](https://pacvue-enterprise.atlassian.net/wiki/spaces/PRD/pages/1410498607/Report+MCP)
-- [Data Query MCP](https://pacvue-enterprise.atlassian.net/wiki/spaces/PRD/pages/1411154204/Data+Query+MCP)
