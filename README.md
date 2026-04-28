@@ -1,17 +1,17 @@
 # Pacvue MCP
 
-Query Pacvue ad data and generate reports from any MCP client. We focus on **Cursor, Claude (Code & Desktop), and ChatGPT**, and support any other agent that speaks the [Model Context Protocol](https://modelcontextprotocol.io).
+Generate Pacvue ad reports from any MCP client. We focus on **Cursor, Claude (Code & Desktop), and ChatGPT**, and support any other agent that speaks the [Model Context Protocol](https://modelcontextprotocol.io).
 
-One MCP server, two capabilities, no per-tool wiring.
+One MCP server, no per-tool wiring.
 
 ## What you get
 
-| Capability         | What it's for                                                         | Output                                                        | Limits                                     |
-| ------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------ |
-| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share"   | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 100,000 rows, 24h download window |
-| **Data Query MCP** | Ad-hoc lookups — "show me the number / a small table / a daily trend" | JSON rows + summary, optional period-over-period              | Sync, ≤ 500 rows, 20s server timeout       |
+| Capability         | What it's for                                                       | Output                                                        | Limits                                     |
+| ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------ |
+| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 100,000 rows, 24h download window |
+| **Data Query MCP** | _Coming soon._                                                      | —                                                             | —                                          |
 
-Both capabilities cover all retailers your Pacvue account has access to (Amazon, Walmart, Instacart, Amazon DSP, Amazon Commerce, Bol, Chewy, Citrus, Commerce-Walmart, Criteo, DoorDash, eBay, Kroger, Mercado, Sam's Club, Target, ...). New retailers and new fields are picked up automatically — no MCP-side changes.
+Report MCP covers all retailers your Pacvue account has access to (Amazon, Walmart, Instacart, Amazon DSP, Amazon Commerce, Bol, Chewy, Citrus, Commerce-Walmart, Criteo, DoorDash, eBay, Kroger, Mercado, Sam's Club, Target, ...). New retailers and new fields are picked up automatically — no MCP-side changes.
 
 ## Endpoint
 
@@ -19,7 +19,7 @@ Both capabilities cover all retailers your Pacvue account has access to (Amazon,
 https://mcp.pacvue.com/mcp
 ```
 
-All 8 tools are exposed under one server entry. You do not configure them individually.
+All 5 tools are exposed under one server entry. You do not configure them individually.
 
 ## Authentication
 
@@ -165,7 +165,7 @@ Then ask your agent:
 
 > What Pacvue tools do you have access to?
 
-You should see 8 tools — 5 from Report MCP and 3 from Data Query MCP.
+You should see 5 tools from Report MCP. (Data Query MCP is coming soon.)
 
 ## Tool reference
 
@@ -183,38 +183,11 @@ You don't call these directly — your agent picks them. They're listed here so 
 
 Canonical flow: `fetch_report_list` → `fetch_report_schema` → (`fetch_materials` if filters) → `run_report` → `fetch_report_result`.
 
-### Data Query MCP (3 tools)
+### Data Query MCP
 
-| Tool                 | What it does                                                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `fetch_query_list`   | List retailers + their queryable Dimensions (Profile / Campaign / AdGroup / ASIN / Search Term / ...).                          |
-| `fetch_query_schema` | Full capability definition for a retailer: dimensions, metrics, filters, group-by options, date / compare ranges, sort, limits. |
-| `execute_query`      | Run the query synchronously. Returns rows + a summary (totals, applied date range, applied group-by, optional comparison).      |
-
-Result rows are nested in **Dimension → Time → Entity** order — when you read a Data Query reply, expect that hierarchy, not flat cross-product rows.
-
-## When to use which
-
-| Question                                                     | Capability                            |
-| ------------------------------------------------------------ | ------------------------------------- |
-| "Top 10 Campaigns by spend last week?"                       | Data Query                            |
-| "Daily ROAS for Campaign A this month?"                      | Data Query                            |
-| "Compare this week's top spenders against last week"         | Data Query (with `compareToPrevious`) |
-| "Export last month's Amazon Campaigns to a file I can share" | Report                                |
-| "Give me a 50,000-row keyword performance dump for Q1"       | Report                                |
-
-Rule of thumb: if the answer fits in chat, use Data Query. If you want a file, use Report.
+_Coming soon._
 
 ## Example prompts
-
-```text
-Show me last week's top 10 Amazon Campaigns by spend.
-```
-
-```text
-What was Campaign "Holiday-Q4" daily ROAS this month?
-Group by day, include spend / sales / ACoS.
-```
 
 ```text
 Export last month's Walmart Campaigns where Spend > $500.
@@ -222,7 +195,11 @@ Columns: campaign name, impressions, clicks, spend, ACoS.
 Send me the download link when it's ready.
 ```
 
-The agent will discover the schema at runtime, ask you to confirm any destructive parameters, and (for reports) poll until the file is ready.
+```text
+Export last month's Amazon Campaigns to a CSV I can share.
+```
+
+The agent will discover the schema at runtime, ask you to confirm any destructive parameters, and poll until the file is ready.
 
 ## Troubleshooting
 
@@ -238,13 +215,6 @@ Fix one of two ways and **fully restart your MCP client** afterwards (a window r
 ### Connection drops after a week of inactivity
 
 Expected — OAuth refresh tokens have a 7-day sliding window. Reconnect through the browser flow and you're good for another 7 days. To eliminate the prompt entirely, switch to an API token.
-
-### `TIMEOUT` from a Data Query
-
-`execute_query` has a 20-second server-side cap and a 500-row result cap. Either:
-
-- Shorten the date window or reduce group-by nesting (Dimension × Time × Entity grows multiplicatively), or
-- Switch to Report MCP for anything that can return more than 500 rows.
 
 ### `run_report` failed with a missing-required-field error
 
@@ -263,8 +233,6 @@ The agent skipped a required filter or config. Required fields are enforced upst
 | Report rows             | 50,000               |
 | Report download URL TTL | 24h                  |
 | Report `taskId` TTL     | 24h                  |
-| Data Query rows         | 500                  |
-| Data Query timeout      | 20s                  |
 | API tokens per user     | 50                   |
 | API token max lifetime  | 180 days             |
 | OAuth refresh token     | 7-day sliding window |
