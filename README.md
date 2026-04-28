@@ -36,7 +36,7 @@ You'll need from your Pacvue admin (or yourself, if you have access):
 1. Sign in to the Pacvue Console.
 2. Go to **Settings → MCP → Create API Token**.
 3. Give it a name, pick an expiry (max 2 years), click **Create**.
-4. **Copy the token immediately.** The full value (`pv_pus_...`) is shown only once. After you close the dialog only the masked prefix remains visible.
+4. **Copy the token immediately.** The full value (`pv_...`) is shown only once. After you close the dialog only the masked prefix remains visible.
 5. Paste it into your MCP client config as the value of the `Authorization` header — **no `Bearer` prefix**, just the raw token (see [Client setup](#client-setup)).
 
 To rotate or revoke a token, return to the same page and delete the row. Up to 50 active tokens per user. Tokens are stored hash-only — Pacvue cannot recover a lost token.
@@ -80,7 +80,7 @@ API Token:
     "pacvue-mcp": {
       "url": "https://mcp.pacvue.com/mcp",
       "headers": {
-        "Authorization": "pv_pus_<your-api-token>"
+        "Authorization": "pv_<your-api-token>"
       }
     }
   }
@@ -100,7 +100,7 @@ API Token:
 ```bash
 claude mcp add pacvue-mcp \
   --transport http \
-  --header "Authorization: pv_pus_<your-api-token>" \
+  --header "Authorization: pv_<your-api-token>" \
   https://mcp.pacvue.com/mcp
 ```
 
@@ -113,7 +113,7 @@ Or in `.claude/settings.json`:
       "type": "http",
       "url": "https://mcp.pacvue.com/mcp",
       "headers": {
-        "Authorization": "pv_pus_<your-api-token>"
+        "Authorization": "pv_<your-api-token>"
       }
     }
   }
@@ -131,7 +131,7 @@ Edit `claude_desktop_config.json` (`~/Library/Application Support/Claude/` on ma
       "type": "http",
       "url": "https://mcp.pacvue.com/mcp",
       "headers": {
-        "Authorization": "pv_pus_<your-api-token>"
+        "Authorization": "pv_<your-api-token>"
       }
     }
   }
@@ -153,7 +153,7 @@ ChatGPT uses OAuth only — it does not accept custom HTTP headers, so API Token
 Pacvue MCP is a standard streamable-HTTP MCP server, so any compliant client (VS Code GitHub Copilot, Windsurf, Cline, custom in-house agents, ...) can connect with the same two patterns above:
 
 - **OAuth** — point the client at `https://mcp.pacvue.com/mcp` with no headers.
-- **API Token** — point the client at the same URL and add an `Authorization` header containing `pv_pus_<your-api-token>` (raw token, no `Bearer` prefix).
+- **API Token** — point the client at the same URL and add an `Authorization` header containing `pv_<your-api-token>` (raw token, no `Bearer` prefix).
 
 If your client expects a different config schema, consult its docs — the URL, the optional header, and the header value are the only Pacvue-side knobs.
 
@@ -232,7 +232,7 @@ The gateway URL is an MCP endpoint, not a webpage. If it opened in your browser,
 
 Fix one of two ways and **fully restart your MCP client** afterwards (a window reload is not enough for some clients):
 
-- **Use a token** — make sure `headers.Authorization` in `mcp.json` contains a current `pv_pus_...` token (raw token, no `Bearer` prefix). Generate or rotate one under **Settings → MCP**.
+- **Use a token** — make sure `headers.Authorization` in `mcp.json` contains a current `pv_...` token (raw token, no `Bearer` prefix). Generate or rotate one under **Settings → MCP**.
 - **Use OAuth instead** — remove the `headers` block from `mcp.json` entirely. The client will show a real **Connect** button that opens the Pacvue login page.
 
 ### Connection drops after a week of inactivity
@@ -256,15 +256,15 @@ The agent skipped a required filter or config. Required fields are enforced upst
 - Each credential is bound 1:1 to a Pacvue user. Data access is scoped to that user's Console entitlements.
 - Issuance, use, and revocation are written to an audit log.
 - Revocation is immediate — the next request with a revoked credential is rejected.
-- Transport is TLS-only. Do not put `pv_pus_...` tokens into chat history, screenshots, or shared configs.
+- Transport is TLS-only. Do not put `pv_...` tokens into chat history, screenshots, or shared configs.
 
 | Hard cap                | Value                |
 | ----------------------- | -------------------- |
-| Report rows             | 100,000              |
+| Report rows             | 50,000               |
 | Report download URL TTL | 24h                  |
 | Report `taskId` TTL     | 24h                  |
 | Data Query rows         | 500                  |
 | Data Query timeout      | 20s                  |
 | API tokens per user     | 50                   |
-| API token max lifetime  | 2 years              |
+| API token max lifetime  | 180 days             |
 | OAuth refresh token     | 7-day sliding window |
