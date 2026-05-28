@@ -6,304 +6,58 @@ One MCP server, no per-tool wiring.
 
 ## What you get
 
-
-| Capability         | What it's for                                                       | Output                                                        | Limits                                     |
-| ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------ |
-| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 100,000 rows, 24h download window |
-| **Data Query MCP** | *Coming soon.*                                                      | —                                                             | —                                          |
-
-
-Report MCP covers all retailers your Pacvue account has access to. New retailers and new fields are picked up automatically — no MCP-side changes.
-
-## Supported platforms & report types
-
-Below is a snapshot of the report types currently exposed by Pacvue MCP, grouped by platform. The actual list returned to your agent is scoped to your Pacvue Console entitlements — you will only see platforms and reports you have access to.
-
-> The agent retrieves this list at runtime via `fetch_report_list`; the tables below are for reference only. Internal `reportType` identifiers are shown in code spans.
-
-### Amazon
-
-**Amazon Ads** — 17 reports
-
-
-| Report                       | `reportType`                | Description                                                   |
-| ---------------------------- | --------------------------- | ------------------------------------------------------------- |
-| Profile Report               | `ProfileReport`             | Performance summary at the profile (account) level            |
-| Campaign Report              | `CampaignReport`            | Campaign-level metrics with daily/weekly/monthly breakdowns   |
-| Ad Group Report              | `AdGroupReport`             | Ad group level performance data                               |
-| Campaign Tag Report          | `CampaignTagReport`         | Performance aggregated by campaign tags (SB/SD)               |
-| Targeting Report             | `TargetingReport`           | Targeting-level performance data                              |
-| Search Term Report           | `QueryReport`               | Search query performance and matched keyword data             |
-| Product Ads Report           | `ProductsADReport`          | Product-level advertising performance                         |
-| Placement Report             | `PlacementReport`           | Ad placement performance (Top of Search, Product Pages, etc.) |
-| Portfolio Report             | `PortfolioReport`           | Portfolio-level performance aggregation                       |
-| ASIN Report                  | `ASINReport`                | ASIN-level performance data                                   |
-| Purchased Product Report     | `PurchasedProductReport`    | Products purchased after ad click                             |
-| Product Eligibility Report   | `ProductEligibilityReport`  | Product advertising eligibility status                        |
-| SB Category Benchmark Report | `SBCategoryBenchmarkReport` | Sponsored Brands category benchmark data                      |
-| SOV Report                   | `SOVReport`                 | Share of Voice metrics by keyword group and brand             |
-| Attribution Report           | `AttributionReport`         | Amazon Attribution conversion data                            |
-| SP Hourly Report             | `SPHourlyReport`            | Sponsored Products hourly performance                         |
-| SB Ads Report                | `SBAdsReport`               | Sponsored Brands ad-level metrics                             |
-
-
-
-
-**Amazon DSP** — 5 reports
-
-
-| Report                      | `reportType`      | Description                                                                          |
-| --------------------------- | ----------------- | ------------------------------------------------------------------------------------ |
-| Campaign Report             | `CampaignReport`  | DSP campaign performance with advertiser/order/lineItem/creative breakdowns          |
-| Inventory Report            | `InventoryReport` | DSP inventory performance with advertiser/order/lineItem/site/supply/deal breakdowns |
-| Audience Report             | `AudienceReport`  | DSP audience performance with advertiser/order/lineItem breakdowns                   |
-| Product (Conversion) Report | `ProductReport`   | DSP product/conversion performance with advertiser/order/lineItem breakdowns         |
-| Tag Report                  | `TagReport`       | DSP tag performance with orderTag/lineItemTag/creativeTag breakdowns                 |
-
-
-
-
-**Amazon Commerce** — 9 reports (1P Vendor + 3P Seller)
-
-
-| Report                              | `reportType`                    | Channel     | Description                             |
-| ----------------------------------- | ------------------------------- | ----------- | --------------------------------------- |
-| Sales & Inventory Report For Vendor | `SalesInventoryReportForVendor` | Vendor (1P) | Vendor-mode sales and inventory metrics |
-| Supply Chain Report For Vendor      | `SupplyChainReportForVendor`    | Vendor (1P) | Vendor supply chain analytics           |
-| Profitability Report For Vendor     | `ProfitabilityReportForVendor`  | Vendor (1P) | Vendor profitability analysis           |
-| Price Tracker Report                | `PriceTrackerReport`            | Vendor (1P) | Vendor-mode price tracking data         |
-| Consumption Forecast Report         | `ConsumptionForecastReport`     | Vendor (1P) | Vendor demand forecasting               |
-| Buybox Tracker Report For Vendor    | `BuyboxTrackerReportForVendor`  | Vendor (1P) | Vendor-mode buybox tracking data        |
-| Sales & Inventory Report For Seller | `SalesInventoryReportForSeller` | Seller (3P) | Seller-mode sales and inventory metrics |
-| Profitability Report For Seller     | `ProfitabilityReportForSeller`  | Seller (3P) | Seller-mode profitability analysis      |
-| Buybox Tracker Report For Seller    | `BuyboxTrackerReportForSeller`  | Seller (3P) | Seller-mode buybox tracking data        |
-
-
-> Commerce reports are routed by `channel`. Tell your agent whether you want 1P (Vendor) or 3P (Seller) — `*ForVendor` and `*ForSeller` go to different backend services.
-
-
-
-### Walmart
-
-**Walmart Ads** — 22 reports
-
-
-| Report                        | `reportType`                     | Description                                |
-| ----------------------------- | -------------------------------- | ------------------------------------------ |
-| Profile Report                | `ProfileReport`                  | Profile-level summary for Walmart          |
-| Campaign Report               | `CampaignReport`                 | Campaign-level performance for Walmart ads |
-| Ad Group Report               | `AdGroupReport`                  | Ad group level metrics                     |
-| Campaign Tag Report           | `TagReport`                      | Performance aggregated by campaign tags    |
-| Keyword Report                | `KeywordReport`                  | Keyword-level performance                  |
-| Search Term Report            | `QueryReport`                    | Search query performance                   |
-| Creative Report               | `CreativeReport`                 | Creative-level performance data            |
-| Tactic Report                 | `TacticReport`                   | Tactic-level performance data              |
-| Page Type Report              | `PageTypeReport`                 | Performance by page type placement         |
-| Platform Report               | `PlatformReport`                 | Cross-platform performance summary         |
-| Placement Report              | `PlacementReport`                | Ad placement performance                   |
-| Item Report                   | `ItemReport`                     | Item-level performance data                |
-| Item Health Report            | `ItemHealthReport`               | Item listing health and performance        |
-| Item Advanced Insight Report  | `ItemAdvancedInsightReport`      | Item-level advanced insight metrics        |
-| Purchased Item Report         | `PurchasedItemReport`            | Items purchased after ad interaction       |
-| SOV Report                    | `SOVReport`                      | Share of Voice metrics for Walmart         |
-| Impression Share Report       | `ImpressionShareReport`          | Impression share and competitive metrics   |
-| Sales Lift Report             | `SalesLiftReport`                | Incremental sales lift attributed to ads   |
-| New Buyer Report              | `NewBuyerReport`                 | New buyer acquisition metrics              |
-| Category Intelligence Report  | `CategoryIntelligenceReport`     | Category-level competitive intelligence    |
-| Campaign Hourly Report        | `HourlyReport`                   | Hourly campaign performance                |
-| Campaign Out of Budget Report | `CampaignOutOfDailyBudgetReport` | Campaigns running out of daily budget      |
-
-
-
-
-**Commerce Walmart** — 3 reports
-
-
-| Report                   | `reportType`           |
-| ------------------------ | ---------------------- |
-| Sales Report             | `SalesReport`          |
-| Inventory Report         | `InventoryReport`      |
-| Sales & Inventory Report | `SalesInventoryReport` |
-
-
-
-
-### Other Retailers
-
-**Instacart** — 16 reports
-
-
-| Report                        | `reportType`                  | Description                                |
-| ----------------------------- | ----------------------------- | ------------------------------------------ |
-| Profile Report                | `ProfileReport`               | Profile-level performance summary          |
-| Campaign Report               | `CampaignReport`              | Campaign-level performance metrics         |
-| Adgroup Report                | `AdGroupReport`               | Adgroup-level performance data             |
-| Campaign Tag Report           | `CampaignTagReport`           | Performance aggregated by campaign tags    |
-| Keyword Report                | `KeywordReport`               | Keyword-level bidding and performance      |
-| Product Ads Report            | `ProductAdsReport`            | Product-level advertising performance      |
-| Product Report                | `ProductReport`               | Product-level performance data             |
-| Page Type Report              | `PageTypeReport`              | Performance by page type placement         |
-| Platform Report               | `PlatformReport`              | Cross-platform performance summary         |
-| Hourly Report                 | `HourlyReport`                | Hourly campaign performance                |
-| SOV Report                    | `SOVReport`                   | Share of Voice by keyword and brand        |
-| Share of Shelf Report         | `ShareOfShelfReport`          | Share of Shelf metrics (requires SDS data) |
-| Attributed Transaction Report | `AttributedTransactionReport` | Transactions attributed to ads             |
-| Promotion Group Report        | `PromotionGroupReport`        | Promotion group dimension performance      |
-| Promotion Report              | `PromotionReport`             | Promotion-level performance data           |
-| Promotion Product Report      | `PromotionProductReport`      | Promotion product dimension performance    |
-
-
-
-
-**Kroger** — 8 reports
-
-
-| Report                 | `reportType`           |
-| ---------------------- | ---------------------- |
-| Profile Report         | `ProfileReport`        |
-| Campaign Report        | `CampaignReport`       |
-| Campaign Tag Report    | `CampaignTagReport`    |
-| AdGroup Report         | `AdgroupReport`        |
-| Targeting Report       | `TargetingReport`      |
-| Product Report         | `ProductReport`        |
-| SOV Report             | `SOVReport`            |
-| Campaign Hourly Report | `CampaignHourlyReport` |
-
-
-
-
-**DoorDash** — 8 reports
-
-
-| Report              | `reportType`           |
-| ------------------- | ---------------------- |
-| Profile Report      | `ProfileReport`        |
-| Campaign Report     | `CampaignReport`       |
-| Campaign Tag Report | `CampaignTagReport`    |
-| Adgroup Report      | `AdgroupReport`        |
-| Keyword Report      | `KeywordReport`        |
-| Product Ads Report  | `ProductReport`        |
-| Product Report      | `ProfileProductReport` |
-| Placement Report    | `PlacementReport`      |
-
-
-
-
-**Sam's Club** — 13 reports
-
-
-| Report                        | `reportType`                     |
-| ----------------------------- | -------------------------------- |
-| Profile Report                | `ProfileReport`                  |
-| Campaign Report               | `CampaignReport`                 |
-| Campaign Tag Report           | `CampaignTagReport`              |
-| AdGroup Report                | `AdgroupReport`                  |
-| Keyword Report                | `KeywordReport`                  |
-| Product Ads Report            | `ProductReport`                  |
-| Page Type Report              | `PageTypeReport`                 |
-| Placement Report              | `PlacementReport`                |
-| Platform Report               | `PlatformReport`                 |
-| Query Report                  | `QueryReport`                    |
-| SOV Report                    | `SOVReport`                      |
-| Campaign Hourly Report        | `HourlyReport`                   |
-| Campaign Out of Budget Report | `CampaignOutOfDailyBudgetReport` |
-
-
-
-
-
-
-**Target** — 11 reports
-
-
-| Report                        | `reportType`                  |
-| ----------------------------- | ----------------------------- |
-| Profile Report                | `ProfileReport`               |
-| Campaign Report               | `CampaignReport`              |
-| Campaign Tag Report           | `CampaignTagReport`           |
-| Line Item Report              | `LineItemReport`              |
-| Keyword Report                | `KeywordReport`               |
-| Product Report                | `ProductReport`               |
-| Page Type Report              | `PageTypeReport`              |
-| Platform Report               | `PlatformReport`              |
-| SOV Report                    | `SOVReport`                   |
-| Attributed Transaction Report | `AttributedTransactionReport` |
-| Hourly Report                 | `HourlyReport`                |
-
-
-
-
-**Criteo** — 11 reports
-
-
-| Report                        | `reportType`                  |
-| ----------------------------- | ----------------------------- |
-| Profile Report                | `ProfileReport`               |
-| Campaign Report               | `CampaignReport`              |
-| Campaign Tag Report           | `CampaignTagReport`           |
-| Line Item Report              | `LineItemReport`              |
-| Keyword Report                | `KeywordReport`               |
-| Product Report                | `ProductReport`               |
-| Page Type Report              | `PageTypeReport`              |
-| Platform Report               | `PlatformReport`              |
-| SOV Report                    | `SOVReport`                   |
-| Attributed Transaction Report | `AttributedTransactionReport` |
-| Hourly Report                 | `HourlyReport`                |
-
-
-
-
-**Citrus** — 9 reports
-
-
-| Report              | `reportType`        |
-| ------------------- | ------------------- |
-| Team Report         | `TeamReport`        |
-| Campaign Report     | `CampaignReport`    |
-| Campaign Tag Report | `CampaignTagReport` |
-| Keyword Report      | `KeywordReport`     |
-| Product Report      | `ProductReport`     |
-| Placement Report    | `PlacementReport`   |
-| SOV Report          | `SOVReport`         |
-| Advanced Report     | `AdvancedReport`    |
-| Hourly Report       | `HourlyReport`      |
-
-
-
-
-**Chewy** — 7 reports
-
-
-| Report                   | `reportType`             |
-| ------------------------ | ------------------------ |
-| Profile Report           | `ProfileReport`          |
-| Campaign Report          | `CampaignReport`         |
-| Campaign Tag Report      | `CampaignTagReport`      |
-| Targeting Report         | `TargetingReport`        |
-| Product Report           | `ProductReport`          |
-| Purchased Product Report | `PurchasedProductReport` |
-| SOV Report               | `SOVReport`              |
-
-
-
-
-**Bol** — 9 reports
-
-
-| Report              | `reportType`               |
-| ------------------- | -------------------------- |
-| Profile Report      | `ProfileReport`            |
-| Campaign Report     | `CampaignReport`           |
-| Campaign Tag Report | `CampaignTagReport`        |
-| Adgroup Report      | `AdgroupReport`            |
-| Targeting Report    | `TargetingReport`          |
-| Product Ads Report  | `ProductReport`            |
-| Product Report      | `ProductAttributionReport` |
-| Query Report        | `QueryReport`              |
-| SOV Report          | `SOVReport`                |
-
-
-
+| Capability         | What it's for                                                       | Output                                                        | Limits                                            |
+| ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------- |
+| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 50,000 rows, 24h download window         |
+| **Data Query MCP** | Inline analytical queries — "show me the numbers in chat"           | Inline JSON rows in the agent response                        | Synchronous; Diamond tier or above                |
+| **SOV Query MCP**  | Share of Voice in chat — brand / keyword / ASIN tabs                | Inline paginated JSON tables                                  | Synchronous; same entitlements as Console SOV Hub |
+
+Report MCP covers all retailers your Pacvue account has access to. New retailers and new fields are picked up automatically — no MCP-side changes. Data Query MCP and SOV Query MCP run on the same retailer footprint and the same Console permission model — entitlements decide which tools and platforms appear in the agent's list.
+
+## Choosing the right toolset
+
+| User intent                  | Toolset                  | When to use                                                          |
+| ---------------------------- | ------------------------ | -------------------------------------------------------------------- |
+| Download a CSV/ZIP report    | Report MCP               | "Send me the file", scheduled exports, large historical pulls        |
+| Ad-hoc metrics in chat       | Data Query MCP           | "Show me the numbers", quick analysis, follow-up questions in thread |
+| Share of Voice table in chat | SOV Query MCP            | Competitive SOV brand/keyword/ASIN views without leaving the agent   |
+| Bulk SOV export to file      | Report MCP (`SOVReport`) | Spreadsheet hand-off, multi-tab SOV ZIP                              |
+
+> One toolset per task. Pick a flow and stay in it — agents shouldn't mix Report calls with Data Query or SOV Query calls in the same job.
+
+## Retailer support
+
+The matrix below shows which retailers each toolset covers. The actual list returned to your agent is scoped to your Pacvue Console entitlements — you only see retailers and tools you have access to.
+
+> Specific report types, levels, and schemas are discovered at runtime via `fetch_report_list`, `fetch_query_list`, and `fetch_query_schema`. There's no static list to keep in sync — when Pacvue adds a retailer or a field, your agent picks it up on the next call.
+
+| Retailer                      | Report MCP (export) | Data Query MCP (in-chat) | SOV Query MCP (in-chat) |
+| ----------------------------- | ------------------- | ------------------------ | ----------------------- |
+| Amazon — Sponsored Ads        | ✓                   | ✓                        | ✓                       |
+| Amazon — DSP                  | ✓                   | ✓                        | —                       |
+| Amazon — Commerce (Vendor 1P) | ✓                   | ✓                        | —                       |
+| Amazon — Commerce (Seller 3P) | ✓                   | ✓                        | —                       |
+| Walmart — Sponsored Ads       | ✓                   | ✓                        | ✓                       |
+| Walmart — Commerce            | ✓                   | —                        | —                       |
+| Instacart                     | ✓                   | ✓                        | ✓                       |
+| Target                        | ✓                   | ✓                        | ✓                       |
+| Kroger                        | ✓                   | ✓                        | ✓                       |
+| Criteo                        | ✓                   | ✓                        | ✓                       |
+| Citrus                        | ✓                   | ✓                        | ✓                       |
+| Bol                           | ✓                   | ✓                        | ✓                       |
+| Chewy                         | ✓                   | ✓                        | ✓                       |
+| Sam's Club                    | ✓                   | ✓                        | ✓                       |
+| DoorDash                      | ✓                   | ✓                        | ✓                       |
+
+### Notes per toolset
+
+- **Report MCP** — covers all retailers above (15 product lines). Amazon Commerce reports are split between Vendor (1P) and Seller (3P) via the `channel` field on each report entry; Walmart Commerce is exposed as a separate `commerce-walmart` product line. Use `fetch_report_list` to see the full report catalog for a retailer at runtime.
+- **Data Query MCP** — wired for 14 platforms. Scope keys differ by retailer:
+  - Standard ads & commerce → `profileIds` (resolve via `materialType=profile`)
+  - Amazon DSP → `advertiserIds` (resolve via `materialType=advertiser`)
+  - Amazon Commerce → split into `commerce-amazon-vendor` and `commerce-amazon-seller` platform keys (different from the Report MCP `commerce` + `channel` model — pick the right key)
+  - Walmart Commerce is **not** wired here — use Report MCP for Walmart commerce.
+- **SOV Query MCP** — 11 platforms. Amazon and Walmart support full `deviceMode`; the other nine are `Aggregated` only. Keyword tag filters work on `amazon` / `walmart` / `instacart` / `criteo` (brand & keyword tabs). Walmart-only `zip_code` filter; `instacart` / `criteo` / `citrus` / `doordash` use `store` (retailerIds).
 
 ## Endpoint
 
@@ -311,7 +65,7 @@ Below is a snapshot of the report types currently exposed by Pacvue MCP, grouped
 https://mcp.pacvue.com/mcp
 ```
 
-All 5 tools are exposed under one server entry. You do not configure them individually.
+All tools — Report MCP, Data Query MCP, and SOV Query MCP — are exposed under one server entry. You do not configure them individually. The agent will only see the toolsets your account is entitled to.
 
 ## Authentication
 
@@ -419,11 +173,15 @@ Or in `.claude/settings.json`:
 Both Claude Desktop and Claude on the web support adding remote MCP servers as **Custom Connectors** — no `mcp.json`, no Node.js, no `npx`. This is the simplest and most reliable path, and it's what we recommend.
 
 1. Open **Settings → Connectors → Add custom connector**.
-  - In Claude Desktop: click your name in the lower-left → **Settings** → **Connectors**.
-  - In Claude on the web: profile menu → **Settings** → **Connectors**.
+
+- In Claude Desktop: click your name in the lower-left → **Settings** → **Connectors**.
+- In Claude on the web: profile menu → **Settings** → **Connectors**.
+
 2. Fill in:
-  - **Name:** `Pacvue MCP` (or whatever you like)
-  - **Remote MCP server URL:** `https://mcp.pacvue.com/mcp`
+
+- **Name:** `Pacvue MCP` (or whatever you like)
+- **Remote MCP server URL:** `https://mcp.pacvue.com/mcp`
+
 3. Click **Add**, then **Connect**. A browser tab opens for Pacvue OAuth — sign in and click **Authorize**.
 4. Back in Claude, the connector flips to **Connected** and the 5 Report MCP tools become available immediately. No restart needed.
 
@@ -513,14 +271,19 @@ Then ask your agent:
 
 > What Pacvue tools do you have access to?
 
-You should see 5 tools from Report MCP. (Data Query MCP is coming soon.)
+You should see up to **12 tools** across three toolsets:
+
+- **Report MCP** — 5 tools
+- **Data Query MCP** — 5 tools (requires Diamond tier or above)
+- **SOV Query MCP** — 2 tools (requires Console SOV Hub entitlement)
+
+Tools you don't have entitlements for won't appear in the agent's tool list — that's expected, not a misconfiguration.
 
 ## Tool reference
 
 You don't call these directly — your agent picks them. They're listed here so you know what Pacvue MCP can do, and so you can sanity-check the agent's plan in transcripts.
 
 ### Report MCP (5 tools)
-
 
 | Tool                  | What it does                                                                                                                                 |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -530,14 +293,56 @@ You don't call these directly — your agent picks them. They're listed here so 
 | `run_report`          | Submit an async report job. Returns a `taskId`. The agent must show you a human-readable summary and ask for confirmation before submitting. |
 | `fetch_report_result` | Poll a `taskId`. Returns `PENDING` / `RUNNING` / `COMPLETED` (with download URL) / `FAILED`.                                                 |
 
-
 Canonical flow: `fetch_report_list` → `fetch_report_schema` → (`fetch_materials` if filters) → `run_report` → `fetch_report_result`.
 
-### Data Query MCP
+### Data Query MCP (5 tools)
 
-*Coming soon.*
+| Tool                    | What it does                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `list_query_platforms`  | List the query platforms available to you (`amazon-ads`, `amazon-dsp`, `walmart`, ...). No arguments.         |
+| `fetch_query_list`      | Get the level hierarchy + attribute/tag tables for one platform (e.g. profile → campaign → adgroup → target). |
+| `fetch_query_schema`    | Self-describing schema for a `(platform, level)` — dimensions, measures, filter operators, granularities.     |
+| `fetch_query_materials` | Resolve names to IDs (profile, advertiser, campaign, tag, vendor/seller account, ...).                        |
+| `execute_query`         | Run the query and return columns + rows (JSON) inline in the agent response.                                  |
+
+Canonical flow: `list_query_platforms` → `fetch_query_list` → `fetch_query_schema` → (`fetch_query_materials` for scope/filter IDs) → `execute_query`.
+
+**Wired query platforms (15):** `amazon-ads`, `amazon-dsp`, `walmart`, `instacart`, `target`, `kroger`, `criteo`, `citrus`, `bol`, `chewy`, `samsclub`, `doordash`, `commerce-amazon-vendor`, `commerce-amazon-seller`.
+
+**Scope rules** — `execute_query` requires a non-empty scope, resolved via `fetch_query_materials`:
+
+- **Standard ads & commerce** → `materialType=profile` → pass IDs in `execute_query.profileIds`.
+- **Amazon DSP** → `materialType=advertiser` → pass IDs in `execute_query.advertiserIds`.
+- **Amazon Commerce** → `materialType=vendor_account` (1P) or `seller_account` (3P), IDs go in `profileIds`. Vendor and Seller route to different backend services — pick the right one.
+
+> Walmart commerce is **not** wired into Data Query — use Report MCP's `SalesReport` / `InventoryReport` / `SalesInventoryReport` for Walmart commerce.
+
+### SOV Query MCP (2 tools)
+
+| Tool                | What it does                                                                                              |
+| ------------------- | --------------------------------------------------------------------------------------------------------- |
+| `list_sov_material` | Resolve SOV inputs — categories, brands, keyword tags (tree), keywords, zip codes (Walmart), stores.      |
+| `query_sov`         | Run the SOV query — returns `brand` / `keyword` / `asin` tab as paginated JSON (`list`, `total`, paging). |
+
+Canonical flow: `list_sov_material` → `query_sov`.
+
+**Wired SOV platforms (11):** `amazon`, `walmart`, `instacart`, `target`, `kroger`, `criteo`, `citrus`, `bol`, `chewy`, `samsclub`, `doordash`.
+
+**Required `query_sov` parameters:** `platform`, `tab` (`brand` | `keyword` | `asin`), `categoryIds`, `startDate`, `endDate`. Optional: `startCompare` / `endCompare`, `dim`, `deviceMode`, `brands`, `keywords`, `keywordTagIds`, `pageInfo`, `columns`. Metrics include `shareOfShelf`, `paidSOV`, `organicSOV`, `spSOV`, `sbSOV`, and tab-dependent top-N matrices.
+
+**Platform-specific notes:**
+
+- **Amazon & Walmart** — full `deviceMode` (`Aggregated` / `Separated` / `Mobile` / `PC` / `App`). Other nine platforms support `deviceMode=Aggregated` only.
+- **Keyword tags** — `amazon`, `walmart`, `instacart`, `criteo` (brand & keyword tabs). Use **leaf** tag IDs in `query_sov`.
+- **Walmart-only** — `zipCodes` filter via `materialType=zip_code`.
+- `**instacart` / `criteo` / `citrus` / `doordash`\*\* — `retailerIds` via `materialType=store`.
+- `**sov_group` / `sov_keyword_tag**` — name search isn't supported; pick IDs from the full list.
+
+> **In-chat vs. file:** `query_sov` returns a paginated table inline — for spreadsheets / multi-tab ZIPs use Report MCP's `SOVReport` (the `ASIN-Keywords` tab requires `filters.sovBrands`, max 100 brands).
 
 ## Example prompts
+
+**Report MCP — async export:**
 
 ```
 Export last month's Walmart Campaigns where Spend > $500.
@@ -549,7 +354,29 @@ Send me the download link when it's ready.
 Export last month's Amazon Campaigns to a CSV I can share.
 ```
 
-The agent will discover the schema at runtime, ask you to confirm any destructive parameters, and poll until the file is ready.
+**Data Query MCP — inline metrics in chat:**
+
+```
+Using Pacvue Data Query, show last 7 days Amazon campaign spend, ROAS, and impressions
+by day for my main profile.
+```
+
+```
+Using Pacvue Data Query, top 10 Amazon DSP line items by sales last month for advertiser X.
+```
+
+**SOV Query MCP — Share of Voice in chat:**
+
+```
+Using Pacvue SOV, show brand-level share of voice for my US beverage category last month —
+break down paid vs organic.
+```
+
+```
+Using Pacvue SOV, top 20 keywords by share of shelf for my Walmart juice category last week.
+```
+
+The agent will discover the schema at runtime, ask you to confirm any destructive parameters, and poll until the file is ready (Report MCP) or return rows directly in the thread (Data Query / SOV Query).
 
 ## Troubleshooting
 
@@ -566,9 +393,9 @@ Fix one of two ways and **fully restart your MCP client** afterwards (a window r
 
 If you went with the **Custom Connector** approach, you shouldn't hit any of these — connector errors usually surface as a clear message in the Connectors UI. The items below apply when you're using the `mcp-remote` bridge:
 
-- `**npx` not found** — Node.js isn't installed or isn't on `PATH`. Install Node LTS, restart Claude Desktop.
+- `**npx` not found\*\* — Node.js isn't installed or isn't on `PATH`. Install Node LTS, restart Claude Desktop.
 - **Wrong command on Windows** — use `npx.cmd`, not `npx`. Claude Desktop spawns the command directly without `cmd.exe`, so the extension matters.
-- **Header has `Bearer`  prefix** — the token must be raw (`Authorization: pv_...`), no `Bearer`.
+- **Header has `Bearer` prefix** — the token must be raw (`Authorization: pv_...`), no `Bearer`.
 - **Stale OAuth cache** — when switching between OAuth and API Token (or rotating tokens), clear `mcp-remote`'s cache: delete `~/.mcp-auth` (macOS/Linux) or `%USERPROFILE%\.mcp-auth` (Windows), then restart.
 
 To see the underlying error, check Claude Desktop's MCP logs at `~/Library/Logs/Claude/mcp*.log` (macOS) or `%APPDATA%\Claude\logs\mcp*.log` (Windows).
@@ -583,6 +410,18 @@ Expected — OAuth refresh tokens have a 7-day sliding window. Reconnect through
 
 The agent skipped a required filter or config. Required fields are enforced upstream by the platform's own API, not by the MCP layer. Re-run the request and tell the agent which platform / profile / time range you want — that's usually the missing piece.
 
+### Data Query tools don't show up / `execute_query` returns 403
+
+Data Query MCP is gated by subscription tier (Diamond or above). If your tier is below the gate, the Data Query tools won't be advertised to your agent at all, and a direct call to `execute_query` would return `ADS_QUERY_FORBIDDEN_TIER`. Talk to your Pacvue account team to upgrade, or fall back to Report MCP for an async export.
+
+### `execute_query` rejected with empty `profileIds` / `advertiserIds`
+
+`execute_query` needs a non-empty scope. Resolve scope IDs first via `fetch_query_materials` (`materialType=profile` for standard ads & commerce; `materialType=advertiser` for Amazon DSP). Tell the agent the profile / advertiser name and let it look up the IDs.
+
+### Agent mixed Report and Query calls in one task
+
+Agents should pick one toolset per task — Report MCP **or** Data Query MCP **or** SOV Query MCP. If you see `run_report` showing up in the middle of a Data Query flow (or vice versa), restate the intent ("answer in chat" vs. "give me a file") and start a fresh turn.
+
 ## Security & limits
 
 - All credentials (API tokens, OAuth access + refresh tokens) are stored hash-only on the server.
@@ -591,14 +430,12 @@ The agent skipped a required filter or config. Required fields are enforced upst
 - Revocation is immediate — the next request with a revoked credential is rejected.
 - Transport is TLS-only. Do not put `pv_...` tokens into chat history, screenshots, or shared configs.
 
-
 | Hard cap                | Value                |
 | ----------------------- | -------------------- |
 | Report rows             | 50,000               |
+| Query rows              | 500                  |
 | Report download URL TTL | 24h                  |
 | Report `taskId` TTL     | 24h                  |
 | API tokens per user     | 50                   |
 | API token max lifetime  | 180 days             |
 | OAuth refresh token     | 7-day sliding window |
-
-
