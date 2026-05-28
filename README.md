@@ -59,6 +59,27 @@ The matrix below shows which retailers each toolset covers. The actual list retu
   - Walmart Commerce is **not** wired here — use Report MCP for Walmart commerce.
 - **SOV Query MCP** — 11 platforms. Amazon and Walmart support full `deviceMode`; the other nine are `Aggregated` only. Keyword tag filters work on `amazon` / `walmart` / `instacart` / `criteo` (brand & keyword tabs). Walmart-only `zip_code` filter; `instacart` / `criteo` / `citrus` / `doordash` use `store` (retailerIds).
 
+### Amazon Commerce Data Query scope
+
+What's available in Data Query per Amazon Commerce channel:
+
+
+| Category              | Vendor (1P) | Seller (3P)             |
+| --------------------- | ----------- | ----------------------- |
+| Sales                 | ✓           | ✓                       |
+| Ads                   | ✓           | ✓                       |
+| Margin / COGS         | ✓           | —                       |
+| Inventory             | ✓           | ✓                       |
+| FBA inventory detail  | —           | ✓                       |
+| Content score         | ✓           | ✓                       |
+| Buy Box / pricing     | ✓           | ✓                       |
+| Promotion             | ✓           | ✓                       |
+| BSR ranking           | ✓           | ✓                       |
+| Real-time             | ✓           | ✓ (hourly granularity)  |
+
+
+> Vendor (1P) and Seller (3P) route to different backend services — `commerce-amazon-vendor` and `commerce-amazon-seller`. Pick the right platform key when calling `execute_query`.
+
 ## Endpoint
 
 ```
@@ -313,7 +334,7 @@ Canonical flow: `list_query_platforms` → `fetch_query_list` → `fetch_query_s
 
 - **Standard ads & commerce** → `materialType=profile` → pass IDs in `execute_query.profileIds`.
 - **Amazon DSP** → `materialType=advertiser` → pass IDs in `execute_query.advertiserIds`.
-- **Amazon Commerce** → `materialType=vendor_account` (1P) or `seller_account` (3P), IDs go in `profileIds`. Vendor and Seller route to different backend services — pick the right one.
+- **Amazon Commerce** → `materialType=vendor_account` (1P) or `seller_account` (3P), IDs go in `profileIds`. Vendor and Seller route to different backend services — pick the right one. See [Amazon Commerce Data Query scope](#amazon-commerce-data-query-scope) above for what's available per channel.
 
 > Walmart commerce is **not** wired into Data Query — use Report MCP's `SalesReport` / `InventoryReport` / `SalesInventoryReport` for Walmart commerce.
 
