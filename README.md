@@ -9,8 +9,8 @@ One MCP server, no per-tool wiring.
 | Capability         | What it's for                                                       | Output                                                        | Limits                                            |
 | ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------- |
 | **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 50,000 rows, 24h download window         |
-| **Data Query MCP** | Inline analytical queries — "show me the numbers in chat"           | Inline JSON rows in the agent response                        | Synchronous; Diamond tier or above                |
-| **SOV Query MCP**  | Share of Voice in chat — brand / keyword / ASIN tabs                | Inline paginated JSON tables                                  | Synchronous; same entitlements as Console SOV Hub |
+| **Data Query MCP** | Inline analytical queries — "show me the numbers in chat"           | Inline JSON rows in the agent response                        | Synchronous           |
+| **SOV Query MCP**  | Share of Voice in chat — brand / keyword / ASIN tabs                | Inline paginated JSON tables                                  | Synchronous |
 
 Report MCP covers all retailers your Pacvue account has access to. New retailers and new fields are picked up automatically — no MCP-side changes. Data Query MCP and SOV Query MCP run on the same retailer footprint and the same Console permission model — entitlements decide which tools and platforms appear in the agent's list.
 
