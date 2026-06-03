@@ -295,8 +295,8 @@ Then ask your agent:
 You should see up to **12 tools** across three toolsets:
 
 - **Report MCP** — 5 tools
-- **Data Query MCP** — 5 tools (requires Diamond tier or above)
-- **SOV Query MCP** — 2 tools (requires Console SOV Hub entitlement)
+- **Data Query MCP** — 5 tools
+- **SOV Query MCP** — 2 tools
 
 Tools you don't have entitlements for won't appear in the agent's tool list — that's expected, not a misconfiguration.
 
@@ -431,9 +431,9 @@ Expected — OAuth refresh tokens have a 7-day sliding window. Reconnect through
 
 The agent skipped a required filter or config. Required fields are enforced upstream by the platform's own API, not by the MCP layer. Re-run the request and tell the agent which platform / profile / time range you want — that's usually the missing piece.
 
-### Data Query tools don't show up / `execute_query` returns 403
+### Data Query tools don't show up
 
-Data Query MCP is gated by subscription tier (Diamond or above). If your tier is below the gate, the Data Query tools won't be advertised to your agent at all, and a direct call to `execute_query` would return `ADS_QUERY_FORBIDDEN_TIER`. Talk to your Pacvue account team to upgrade, or fall back to Report MCP for an async export.
+Data Query MCP is available to any Pacvue user — there's no special entitlement to enable. If the tools don't appear, it's almost always a connection or auth issue: fully restart your MCP client and confirm your token / OAuth session is valid. The tool list is also scoped to the retailers your Console account can see, so you'll only get platforms you have access to.
 
 ### `execute_query` rejected with empty `profileIds` / `advertiserIds`
 
