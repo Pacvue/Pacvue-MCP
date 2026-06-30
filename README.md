@@ -38,7 +38,7 @@ The matrix below shows which retailers each toolset covers. The actual list retu
 | Amazon — Commerce (Vendor 1P) | ✓                   | ✓                        | —                       |
 | Amazon — Commerce (Seller 3P) | ✓                   | ✓                        | —                       |
 | Walmart — Sponsored Ads       | ✓                   | ✓                        | ✓                       |
-| Walmart — Commerce            | ✓                   | —                        | —                       |
+| Walmart — Commerce (Vendor 1P) | —                   | ✓                        | —                       |
 | Instacart                     | ✓                   | ✓                        | ✓                       |
 | Target                        | ✓                   | ✓                        | ✓                       |
 | Kroger                        | ✓                   | ✓                        | ✓                       |
@@ -51,12 +51,12 @@ The matrix below shows which retailers each toolset covers. The actual list retu
 
 ### Notes per toolset
 
-- **Report MCP** — covers all retailers above (15 product lines). Amazon Commerce reports are split between Vendor (1P) and Seller (3P) via the `channel` field on each report entry; Walmart Commerce is exposed as a separate `commerce-walmart` product line. Use `fetch_report_list` to see the full report catalog for a retailer at runtime.
-- **Data Query MCP** — wired for 14 platforms. Scope keys differ by retailer:
+- **Report MCP** — covers the retailers marked ✓ above (14 product lines). Amazon Commerce reports are split between Vendor (1P) and Seller (3P) via the `channel` field on each report entry. Walmart Commerce is **not** available in Report MCP. Use `fetch_report_list` to see the full report catalog for a retailer at runtime.
+- **Data Query MCP** — wired for 15 platforms. Scope keys differ by retailer:
   - Standard ads & commerce → `profileIds` (resolve via `materialType=profile`)
   - Amazon DSP → `advertiserIds` (resolve via `materialType=advertiser`)
   - Amazon Commerce → split into `commerce-amazon-vendor` and `commerce-amazon-seller` platform keys (different from the Report MCP `commerce` + `channel` model — pick the right key)
-  - Walmart Commerce is **not** wired here — use Report MCP for Walmart commerce.
+  - Walmart Commerce → `commerce-walmart-vendor` (Vendor 1P only); resolve scope via `materialType=vendor_account` → `profileIds`. See [Walmart Commerce Data Query scope](#walmart-commerce-data-query-scope) below.
 - **SOV Query MCP** — 11 platforms. Amazon and Walmart support full `deviceMode`; the other nine are `Aggregated` only. Keyword tag filters work on `amazon` / `walmart` / `instacart` / `criteo` (brand & keyword tabs). Walmart-only `zip_code` filter; `instacart` / `criteo` / `citrus` / `doordash` use `store` (retailerIds).
 
 ### Amazon Commerce Data Query scope
@@ -74,11 +74,28 @@ What's available in Data Query per Amazon Commerce channel:
 | Content score         | ✓           | ✓                       |
 | Buy Box / pricing     | ✓           | ✓                       |
 | Promotion             | ✓           | ✓                       |
+| Coupon                | ✓           | ✓                       |
+| Alerts                | ✓           | ✓                       |
+| PO (purchase orders)  | ✓           | —                       |
 | BSR ranking           | ✓           | ✓                       |
 | Real-time             | ✓           | ✓ (hourly granularity)  |
 
 
 > Vendor (1P) and Seller (3P) route to different backend services — `commerce-amazon-vendor` and `commerce-amazon-seller`. Pick the right platform key when calling `execute_query`.
+
+### Walmart Commerce Data Query scope
+
+Walmart Commerce is wired into Data Query for **Vendor (1P) only**, under the `commerce-walmart-vendor` platform key. What's available:
+
+
+| Category          | Vendor (1P) | Seller (3P) |
+| ----------------- | ----------- | ----------- |
+| Sales             | ✓           | —           |
+| Inventory         | ✓           | —           |
+| Buy Box / pricing | ✓           | —           |
+
+
+> Resolve scope via `materialType=vendor_account` → pass IDs in `execute_query.profileIds`. Only Vendor (1P) is supported — Walmart Seller (3P) commerce is not available in either Data Query or Report MCP.
 
 ## Endpoint
 
@@ -328,15 +345,16 @@ Canonical flow: `fetch_report_list` → `fetch_report_schema` → (`fetch_materi
 
 Canonical flow: `list_query_platforms` → `fetch_query_list` → `fetch_query_schema` → (`fetch_query_materials` for scope/filter IDs) → `execute_query`.
 
-**Wired query platforms (15):** `amazon-ads`, `amazon-dsp`, `walmart`, `instacart`, `target`, `kroger`, `criteo`, `citrus`, `bol`, `chewy`, `samsclub`, `doordash`, `commerce-amazon-vendor`, `commerce-amazon-seller`.
+**Wired query platforms (15):** `amazon-ads`, `amazon-dsp`, `walmart`, `instacart`, `target`, `kroger`, `criteo`, `citrus`, `bol`, `chewy`, `samsclub`, `doordash`, `commerce-amazon-vendor`, `commerce-amazon-seller`, `commerce-walmart-vendor`.
 
 **Scope rules** — `execute_query` requires a non-empty scope, resolved via `fetch_query_materials`:
 
 - **Standard ads & commerce** → `materialType=profile` → pass IDs in `execute_query.profileIds`.
 - **Amazon DSP** → `materialType=advertiser` → pass IDs in `execute_query.advertiserIds`.
 - **Amazon Commerce** → `materialType=vendor_account` (1P) or `seller_account` (3P), IDs go in `profileIds`. Vendor and Seller route to different backend services — pick the right one. See [Amazon Commerce Data Query scope](#amazon-commerce-data-query-scope) above for what's available per channel.
+- **Walmart Commerce** → `commerce-walmart-vendor` (Vendor 1P only) → `materialType=vendor_account`, IDs go in `profileIds`. See [Walmart Commerce Data Query scope](#walmart-commerce-data-query-scope) above.
 
-> Walmart commerce is **not** wired into Data Query — use Report MCP's `SalesReport` / `InventoryReport` / `SalesInventoryReport` for Walmart commerce.
+> Walmart commerce supports **Vendor (1P) only**, via Data Query (`commerce-walmart-vendor`). Walmart Seller (3P) commerce is not supported, and Walmart commerce is **not** available in Report MCP.
 
 ### SOV Query MCP (2 tools)
 
