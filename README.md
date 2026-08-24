@@ -8,7 +8,7 @@ One MCP server, no per-tool wiring.
 
 | Capability         | What it's for                                                       | Output                                                        | Limits                                            |
 | ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------- |
-| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 50,000 rows, 24h download window         |
+| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 150,000 rows, 24h download window         |
 | **Data Query MCP** | Inline analytical queries — "show me the numbers in chat"           | Inline JSON rows in the agent response                        | Synchronous           |
 | **SOV Query MCP**  | Share of Voice in chat — brand / keyword / ASIN tabs                | Inline paginated JSON tables                                  | Synchronous |
 
@@ -471,10 +471,11 @@ Agents should pick one toolset per task — Report MCP **or** Data Query MCP **o
 
 | Hard cap                | Value                |
 | ----------------------- | -------------------- |
-| Report rows             | 50,000               |
+| Report rows             | 150,000              |
 | Query rows              | 500                  |
 | Report download URL TTL | 24h                  |
 | Report `taskId` TTL     | 24h                  |
 | API tokens per user     | 50                   |
 | API token max lifetime  | 180 days             |
 | OAuth refresh token     | 7-day sliding window |
+
