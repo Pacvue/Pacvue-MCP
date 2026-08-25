@@ -4,11 +4,13 @@ Generate Pacvue ad reports from any MCP client. We focus on **Cursor, Claude (Co
 
 One MCP server, no per-tool wiring.
 
+> **Enterprise-managed clients (Claude, ChatGPT, and similar):** where connectors are governed at the workspace level, individual users may not be permitted to add Pacvue MCP as a Custom Connector. Please contact your IT administrator to have it provisioned for your organization.
+
 ## What you get
 
 | Capability         | What it's for                                                       | Output                                                        | Limits                                            |
 | ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------- |
-| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 50,000 rows, 24h download window         |
+| **Report MCP**     | Ad-hoc one-off report exports — "give me a file I can save / share" | CSV (or ZIP of CSVs for multi-tab reports) via pre-signed URL | Async, ≤ 150,000 rows, 24h download window         |
 | **Data Query MCP** | Inline analytical queries — "show me the numbers in chat"           | Inline JSON rows in the agent response                        | Synchronous           |
 | **SOV Query MCP**  | Share of Voice in chat — brand / keyword / ASIN tabs                | Inline paginated JSON tables                                  | Synchronous |
 
@@ -209,6 +211,8 @@ Or in `.claude/settings.json`:
 **Recommended: Custom Connector (OAuth, no config files)**
 
 Both Claude Desktop and Claude on the web support adding remote MCP servers as **Custom Connectors** — no `mcp.json`, no Node.js, no `npx`. This is the simplest and most reliable path, and it's what we recommend.
+
+> **Enterprise-managed clients:** see the note at the [top of this README](#pacvue-mcp) — provisioning of the connector may require your IT administrator or workspace owner.
 
 1. Open **Settings → Connectors → Add custom connector**.
 
@@ -471,7 +475,7 @@ Agents should pick one toolset per task — Report MCP **or** Data Query MCP **o
 
 | Hard cap                | Value                |
 | ----------------------- | -------------------- |
-| Report rows             | 50,000               |
+| Report rows             | 150,000              |
 | Query rows              | 500                  |
 | Report download URL TTL | 24h                  |
 | Report `taskId` TTL     | 24h                  |
