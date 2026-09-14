@@ -42,7 +42,8 @@ The matrix below shows which retailers each toolset covers. The actual list retu
 | Walmart — Sponsored Ads       | ✓                   | ✓                        | ✓                       |
 | Walmart — Commerce (Vendor 1P) | —                   | ✓                        | —                       |
 | Instacart                     | ✓                   | ✓                        | ✓                       |
-| Target                        | ✓                   | ✓                        | ✓                       |
+| Target — Sponsored Ads        | ✓                   | ✓                        | ✓                       |
+| Target — Commerce (Vendor 1P) | —                   | ✓                        | —                       |
 | Kroger                        | ✓                   | ✓                        | ✓                       |
 | Criteo                        | ✓                   | ✓                        | ✓                       |
 | Citrus                        | ✓                   | ✓                        | ✓                       |
@@ -53,12 +54,13 @@ The matrix below shows which retailers each toolset covers. The actual list retu
 
 ### Notes per toolset
 
-- **Report MCP** — covers the retailers marked ✓ above (14 product lines). Amazon Commerce reports are split between Vendor (1P) and Seller (3P) via the `channel` field on each report entry. Walmart Commerce is **not** available in Report MCP. Use `fetch_report_list` to see the full report catalog for a retailer at runtime.
-- **Data Query MCP** — wired for 15 platforms. Scope keys differ by retailer:
+- **Report MCP** — covers the retailers marked ✓ above (14 product lines). Amazon Commerce reports are split between Vendor (1P) and Seller (3P) via the `channel` field on each report entry. Walmart Commerce and Target Commerce are **not** available in Report MCP. Use `fetch_report_list` to see the full report catalog for a retailer at runtime.
+- **Data Query MCP** — wired for 16 platforms. Scope keys differ by retailer:
   - Standard ads & commerce → `profileIds` (resolve via `materialType=profile`)
   - Amazon DSP → `advertiserIds` (resolve via `materialType=advertiser`)
   - Amazon Commerce → split into `commerce-amazon-vendor` and `commerce-amazon-seller` platform keys (different from the Report MCP `commerce` + `channel` model — pick the right key)
   - Walmart Commerce → `commerce-walmart-vendor` (Vendor 1P only); resolve scope via `materialType=vendor_account` → `profileIds`. See [Walmart Commerce Data Query scope](#walmart-commerce-data-query-scope) below.
+  - Target Commerce → `commerce-target` (Vendor 1P only); scope is your Pacvue client and is applied automatically — no material lookup needed. See [Target Commerce Data Query scope](#target-commerce-data-query-scope) below.
 - **SOV Query MCP** — 11 platforms. Amazon and Walmart support full `deviceMode`; the other nine are `Aggregated` only. Keyword tag filters work on `amazon` / `walmart` / `instacart` / `criteo` (brand & keyword tabs). Walmart-only `zip_code` filter; `instacart` / `criteo` / `citrus` / `doordash` use `store` (retailerIds).
 
 ### Amazon Commerce Data Query scope
@@ -66,22 +68,31 @@ The matrix below shows which retailers each toolset covers. The actual list retu
 What's available in Data Query per Amazon Commerce channel:
 
 
-| Category              | Vendor (1P) | Seller (3P)             |
-| --------------------- | ----------- | ----------------------- |
-| Sales                 | ✓           | ✓                       |
-| Ads                   | ✓           | ✓                       |
-| Margin / COGS         | ✓           | —                       |
-| Inventory             | ✓           | ✓                       |
-| FBA inventory detail  | —           | ✓                       |
-| Content score         | ✓           | ✓                       |
-| Buy Box / pricing     | ✓           | ✓                       |
-| Promotion             | ✓           | ✓                       |
-| Coupon                | ✓           | ✓                       |
-| Alerts                | ✓           | ✓                       |
-| PO (purchase orders)  | ✓           | —                       |
-| BSR ranking           | ✓           | ✓                       |
-| Real-time             | ✓           | ✓ (hourly granularity)  |
+| Category                  | Vendor (1P)                          | Seller (3P)             |
+| ------------------------- | ------------------------------------ | ----------------------- |
+| Sales                     | ✓ (Manufacturing + Sourcing view)    | ✓                       |
+| Ads                       | ✓                                    | ✓                       |
+| Profitability (margin / COGS) | ✓                                | ✓                       |
+| Inventory                 | ✓ (Manufacturing + Sourcing view)    | ✓                       |
+| FBA inventory detail      | —                                    | ✓                       |
+| Content score             | ✓                                    | ✓                       |
+| Buy Box / pricing         | ✓                                    | ✓                       |
+| Promotion                 | ✓                                    | ✓                       |
+| Coupon                    | ✓                                    | ✓                       |
+| Subscribe & Save (SnS)    | ✓                                    | —                       |
+| Alerts                    | ✓                                    | ✓                       |
+| PO (purchase orders)      | ✓                                    | —                       |
+| SOA tracker               | ✓                                    | —                       |
+| Order (order line items)  | —                                    | ✓                       |
+| Competitive Tracker       | ✓                                    | ✓                       |
+| Forecast                  | ✓                                    | ✓                       |
+| Customer Feedback         | ✓                                    | ✓                       |
+| Search Insight            | ✓                                    | ✓                       |
+| BSR ranking               | ✓                                    | ✓                       |
+| Real-time                 | ✓                                    | ✓ (hourly granularity)  |
 
+
+> **Manufacturing vs. Sourcing view (1P):** Vendor Sales and Inventory default to the Manufacturing view. Switch Sales to Sourcing via `options.reportType` (e.g. `sourcing_retail`); Inventory exposes both views as separate measure sets. Both are discoverable through `fetch_query_schema`.
 
 > Vendor (1P) and Seller (3P) route to different backend services — `commerce-amazon-vendor` and `commerce-amazon-seller`. Pick the right platform key when calling `execute_query`.
 
@@ -98,6 +109,21 @@ Walmart Commerce is wired into Data Query for **Vendor (1P) only**, under the `c
 
 
 > Resolve scope via `materialType=vendor_account` → pass IDs in `execute_query.profileIds`. Only Vendor (1P) is supported — Walmart Seller (3P) commerce is not available in either Data Query or Report MCP.
+
+### Target Commerce Data Query scope
+
+Target Commerce is wired into Data Query for **Vendor (1P) only**, under the `commerce-target` platform key. What's available:
+
+
+| Category             | Vendor (1P) |
+| -------------------- | ----------- |
+| Sales                | ✓           |
+| RMS (Roundel ads)    | ✓           |
+| Inventory            | ✓           |
+| PO (purchase orders) | ✓           |
+
+
+> Scope is your Pacvue client and is applied automatically from your credential — no `fetch_query_materials` call and no `profileIds` needed. Target Commerce is not available in Report MCP.
 
 ## Endpoint
 
@@ -349,16 +375,17 @@ Canonical flow: `fetch_report_list` → `fetch_report_schema` → (`fetch_materi
 
 Canonical flow: `list_query_platforms` → `fetch_query_list` → `fetch_query_schema` → (`fetch_query_materials` for scope/filter IDs) → `execute_query`.
 
-**Wired query platforms (15):** `amazon-ads`, `amazon-dsp`, `walmart`, `instacart`, `target`, `kroger`, `criteo`, `citrus`, `bol`, `chewy`, `samsclub`, `doordash`, `commerce-amazon-vendor`, `commerce-amazon-seller`, `commerce-walmart-vendor`.
+**Wired query platforms (16):** `amazon-ads`, `amazon-dsp`, `walmart`, `instacart`, `target`, `kroger`, `criteo`, `citrus`, `bol`, `chewy`, `samsclub`, `doordash`, `commerce-amazon-vendor`, `commerce-amazon-seller`, `commerce-walmart-vendor`, `commerce-target`.
 
-**Scope rules** — `execute_query` requires a non-empty scope, resolved via `fetch_query_materials`:
+**Scope rules** — `execute_query` requires a non-empty scope, resolved via `fetch_query_materials` (Target Commerce is the one exception — its scope comes from your credential):
 
 - **Standard ads & commerce** → `materialType=profile` → pass IDs in `execute_query.profileIds`.
 - **Amazon DSP** → `materialType=advertiser` → pass IDs in `execute_query.advertiserIds`.
 - **Amazon Commerce** → `materialType=vendor_account` (1P) or `seller_account` (3P), IDs go in `profileIds`. Vendor and Seller route to different backend services — pick the right one. See [Amazon Commerce Data Query scope](#amazon-commerce-data-query-scope) above for what's available per channel.
 - **Walmart Commerce** → `commerce-walmart-vendor` (Vendor 1P only) → `materialType=vendor_account`, IDs go in `profileIds`. See [Walmart Commerce Data Query scope](#walmart-commerce-data-query-scope) above.
+- **Target Commerce** → `commerce-target` (Vendor 1P only) → no material lookup; scope is applied automatically from your credential. See [Target Commerce Data Query scope](#target-commerce-data-query-scope) above.
 
-> Walmart commerce supports **Vendor (1P) only**, via Data Query (`commerce-walmart-vendor`). Walmart Seller (3P) commerce is not supported, and Walmart commerce is **not** available in Report MCP.
+> Walmart and Target commerce support **Vendor (1P) only**, via Data Query (`commerce-walmart-vendor` / `commerce-target`). Their Seller (3P) commerce is not supported, and neither is available in Report MCP.
 
 ### SOV Query MCP (2 tools)
 
@@ -459,7 +486,7 @@ Data Query MCP is available to any Pacvue user — there's no special entitlemen
 
 ### `execute_query` rejected with empty `profileIds` / `advertiserIds`
 
-`execute_query` needs a non-empty scope. Resolve scope IDs first via `fetch_query_materials` (`materialType=profile` for standard ads & commerce; `materialType=advertiser` for Amazon DSP). Tell the agent the profile / advertiser name and let it look up the IDs.
+`execute_query` needs a non-empty scope. Resolve scope IDs first via `fetch_query_materials` (`materialType=profile` for standard ads; `materialType=advertiser` for Amazon DSP; `materialType=vendor_account` / `seller_account` for Amazon and Walmart Commerce). Tell the agent the profile / advertiser / account name and let it look up the IDs. Target Commerce is the exception — its scope comes from your credential, so this error there points to an auth issue rather than a missing lookup.
 
 ### Agent mixed Report and Query calls in one task
 
