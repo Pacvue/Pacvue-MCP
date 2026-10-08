@@ -147,7 +147,7 @@ You'll need from your Pacvue admin (or yourself, if you have access):
 
 1. Sign in to the Pacvue Console.
 2. Go to **Settings → MCP → Create API Token**.
-3. Give it a name, pick an expiry (max 2 years), click **Create**.
+3. Give it a name, pick an expiry (max 180 days), click **Create**.
 4. **Copy the token immediately.** The full value (`pv_...`) is shown only once. After you close the dialog only the masked prefix remains visible.
 5. Paste it into your MCP client config as the value of the `Authorization` header — **no `Bearer` prefix**, just the raw token (see [Client setup](#client-setup)).
 
