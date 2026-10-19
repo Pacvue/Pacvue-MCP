@@ -79,7 +79,7 @@ What's available in Data Query per Amazon Commerce channel:
 | Buy Box / pricing         | ✓                                    | ✓                       |
 | Promotion                 | ✓                                    | ✓                       |
 | Coupon                    | ✓                                    | ✓                       |
-| Subscribe & Save (SnS)    | ✓                                    | —                       |
+| Subscribe & Save (SnS)    | ✓                                    | ✓                       |
 | Alerts                    | ✓                                    | ✓                       |
 | PO (purchase orders)      | ✓                                    | —                       |
 | SOA tracker               | ✓                                    | —                       |
