@@ -46,7 +46,6 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
   - [AMC MCP](#amc-mcp)
   - [Market Intelligence MCP](#market-intelligence-mcp)
   - [Campaign Management MCP](#campaign-management-mcp)
-  - [Rule MCP](#rule-mcp)
   - [SOV Management MCP](#sov-management-mcp)
   - [Authorization MCP](#authorization-mcp)
 - [Example prompts](#example-prompts)
@@ -62,26 +61,23 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 
 ## What you get
 
-Tools are grouped into services. **GA** services are generally available. **Beta** services are available, with narrower platform coverage.
+| Category | Service | What it's for | Tools |
+| --- | --- | --- | --- |
+| Data | Report MCP | Download a CSV (or a ZIP of CSVs) for a report | `fetch_report_list`, `fetch_report_schema`, `fetch_report_materials`, `run_report`, `fetch_report_result` |
+| Data | Data Query MCP | Ad-hoc metrics in chat | `list_query_platforms`, `fetch_query_list`, `fetch_query_schema`, `fetch_query_materials`, `fetch_query_material_schema`, `execute_query` |
+| Data | Brand Analytics | Amazon and Walmart category search terms | `fetch_brand_analytics_search_terms` |
+| Data | SOV Query MCP | Share of Voice in chat | `list_sov_material`, `query_sov` |
+| Data | Budget Manager MCP | Monthly budget vs. spend from Budget Manager | `list_budget_platforms`, `fetch_budget_vs_spend` |
+| Data | Event MCP | Advertising change log and task history | `list_event_capabilities`, `fetch_event_schema`, `query_events` |
+| Data | Creative Hub MCP | Creative assets and their performance | `list_creative_hub_filter_options`, `fetch_creative_hub_materials`, `execute_creative_hub_asset_search`, `execute_creative_hub_asset_performance`, `search_creative_hub_asset_library` |
+| Data | Global Report MCP | Cross-retailer totals from Pacvue HQ Global Report | `fetch_global_report_options`, `query_global_report` |
+| Data | AMC MCP | Create an AMC report or audience directly in Amazon | `list_amc_instances`, `list_amc_advertisers`, `generate_amc_sql`, `generate_amc_report`, `generate_amc_audience`, `get_amc_job` |
+| Data | Market Intelligence MCP | Market share from Helium 10 Market 360 | `list_user_markets`, `get_market_statistics`, `get_market_trends`, `get_market_leaderboard`, `get_market_products` |
+| Action | Campaign Management MCP | Create or edit campaign settings. Not every platform or campaign type is supported | `list_campaign_mgmt_platforms`, `fetch_campaign_mgmt_schema`, `fetch_campaign_mgmt_materials`, `execute_campaign_mgmt_actions` |
+| Action | SOV Management MCP | Create, update, or delete a keyword SOV category | `manage_sov_category` |
+| Account | Authorization MCP | List the Pacvue clients this credential can act on | `fetch_authorized_clients` |
 
-| Category | Service | Release | What it's for | Tools |
-| --- | --- | --- | --- | --- |
-| Data | Report MCP | GA | Download a CSV (or a ZIP of CSVs) for a report | `fetch_report_list`, `fetch_report_schema`, `fetch_report_materials`, `run_report`, `fetch_report_result` |
-| Data | Data Query MCP | GA | Ad-hoc metrics in chat | `list_query_platforms`, `fetch_query_list`, `fetch_query_schema`, `fetch_query_materials`, `fetch_query_material_schema`, `execute_query` |
-| Data | Brand Analytics | GA | Amazon and Walmart category search terms | `fetch_brand_analytics_search_terms` |
-| Data | SOV Query MCP | GA | Share of Voice in chat | `list_sov_material`, `query_sov` |
-| Data | Budget Manager MCP | GA | Monthly budget vs. spend from Budget Manager | `list_budget_platforms`, `fetch_budget_vs_spend` |
-| Data | Event MCP | GA | Advertising change log and task history | `list_event_capabilities`, `fetch_event_schema`, `query_events` |
-| Data | Creative Hub MCP | GA | Creative assets and their performance | `list_creative_hub_filter_options`, `fetch_creative_hub_materials`, `execute_creative_hub_asset_search`, `execute_creative_hub_asset_performance`, `search_creative_hub_asset_library` |
-| Data | Global Report MCP | GA | Cross-retailer totals from Pacvue HQ Global Report | `fetch_global_report_options`, `query_global_report` |
-| Data | AMC MCP | GA | Create an AMC report or audience directly in Amazon | `list_amc_instances`, `list_amc_advertisers`, `generate_amc_sql`, `generate_amc_report`, `generate_amc_audience`, `get_amc_job` |
-| Data | Market Intelligence MCP | GA | Market share from Helium 10 Market 360 | `list_user_markets`, `get_market_statistics`, `get_market_trends`, `get_market_leaderboard`, `get_market_products` |
-| Action | Campaign Management MCP | GA | Create or edit campaign settings. Not every platform or campaign type is supported | `list_campaign_mgmt_platforms`, `fetch_campaign_mgmt_schema`, `fetch_campaign_mgmt_materials`, `execute_campaign_mgmt_actions` |
-| Action | Rule MCP | Beta | Create or edit automation rules | `list_rule_capabilities`, `get_rule_type_config`, `list_rules`, `list_rule_drafts`, `open_rule_draft`, `get_rule_draft`, `update_rule_draft`, `commit_rule_draft` |
-| Action | SOV Management MCP | GA | Create, update, or delete a keyword SOV category | `manage_sov_category` |
-| Account | Authorization MCP | GA | List the Pacvue clients this credential can act on | `fetch_authorized_clients` |
-
-Report MCP is asynchronous: up to 150,000 rows, and the download link is valid for 24 hours. Data Query, SOV Query, Budget, Event, Creative Hub, Global Report, and Market Intelligence return JSON in the chat. Campaign, Rule, SOV Management, and AMC writes must be confirmed with you before the agent submits them.
+Report MCP is asynchronous: up to 150,000 rows, and the download link is valid for 24 hours. Data Query, SOV Query, Budget, Event, Creative Hub, Global Report, and Market Intelligence return JSON in the chat. Campaign, SOV Management, and AMC writes must be confirmed with you before the agent submits them.
 
 New retailers and fields are picked up at runtime. The matrices below are the current footprint, not a frozen catalog.
 
@@ -103,7 +99,6 @@ Use one toolset per task. Do not mix a file export with an in-chat query, or a r
 | Amazon AMC report or audience | AMC MCP |
 | Market share, trends, leaderboard, products | Market Intelligence MCP |
 | Create or edit campaigns, bids, budgets, targets | Campaign Management MCP |
-| Create or edit a rule | Rule MCP |
 | Add, change, or remove an SOV category | SOV Management MCP |
 | Which client should this run against | Authorization MCP |
 
@@ -115,30 +110,30 @@ ChatGPT, TikTok, Reddit, and Pinterest currently expose **materials** in Data Qu
 
 ### Ads
 
-| Retailer | Report | Data Query | Brand Analytics | SOV | Budget | Event | Creative Hub | Global Report | Market Intelligence | Campaign Mgmt | Rule | AMC | SOV Mgmt |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Amazon Ads | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Amazon DSP | ✓ | ✓ |  |  | ✓ |  | ✓ | ✓ |  | ✓ |  | ✓ |  |
-| Walmart | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |  | ✓ | ✓ |  | ✓ |
-| Target | ✓ | ✓ |  | ✓ | ✓ | ✓ |  | ✓ |  | ✓ | ✓ |  | ✓ |
-| Instacart | ✓ | ✓ |  | ✓ | ✓ |  | ✓ | ✓ |  | ✓ |  |  | ✓ |
-| Kroger | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  |  | ✓ |
-| Criteo | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  |  | ✓ |
-| Citrus | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  |  | ✓ |
-| Bol | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  |  | ✓ |
-| Chewy | ✓ | ✓ |  | ✓ | ✓ |  |  |  |  | ✓ |  |  | ✓ |
-| DoorDash | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  |  | ✓ |
-| Sam's Club | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  |  | ✓ |
-| Kevel |  |  |  | ✓ |  |  |  |  |  |  |  |  | ✓ |
-| Walmart DSP |  |  |  |  |  |  |  |  |  | ✓ |  |  |  |
-| Roku |  |  |  |  |  |  |  |  |  | ✓ |  |  |  |
-| Pacvue Direct |  |  |  |  |  |  |  |  |  | ✓ |  |  |  |
-| Google |  |  |  |  |  |  |  |  |  | ✓ |  |  |  |
-| Meta |  |  |  |  |  |  |  |  |  | ✓ |  |  |  |
-| TikTok |  | ✓ |  |  |  |  | ✓ |  |  |  |  |  |  |
-| ChatGPT |  | ✓ |  |  |  |  |  |  |  |  |  |  |  |
-| Pinterest |  | ✓ |  |  |  |  |  |  |  |  |  |  |  |
-| Reddit |  | ✓ |  |  |  |  |  |  |  |  |  |  |  |
+| Retailer | Report | Data Query | Brand Analytics | SOV | Budget | Event | Creative Hub | Global Report | Market Intelligence | Campaign Mgmt | AMC | SOV Mgmt |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Amazon Ads | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Amazon DSP | ✓ | ✓ |  |  | ✓ |  | ✓ | ✓ |  | ✓ | ✓ |  |
+| Walmart | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |  | ✓ |  | ✓ |
+| Target | ✓ | ✓ |  | ✓ | ✓ | ✓ |  | ✓ |  | ✓ |  | ✓ |
+| Instacart | ✓ | ✓ |  | ✓ | ✓ |  | ✓ | ✓ |  | ✓ |  | ✓ |
+| Kroger | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
+| Criteo | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
+| Citrus | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
+| Bol | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
+| Chewy | ✓ | ✓ |  | ✓ | ✓ |  |  |  |  | ✓ |  | ✓ |
+| DoorDash | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
+| Sam's Club | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
+| Kevel |  |  |  | ✓ |  |  |  |  |  |  |  | ✓ |
+| Walmart DSP |  |  |  |  |  |  |  |  |  | ✓ |  |  |
+| Roku |  |  |  |  |  |  |  |  |  | ✓ |  |  |
+| Pacvue Direct |  |  |  |  |  |  |  |  |  | ✓ |  |  |
+| Google |  |  |  |  |  |  |  |  |  | ✓ |  |  |
+| Meta |  |  |  |  |  |  |  |  |  | ✓ |  |  |
+| TikTok |  | ✓ |  |  |  |  | ✓ |  |  |  |  |  |
+| ChatGPT |  | ✓ |  |  |  |  |  |  |  |  |  |  |
+| Pinterest |  | ✓ |  |  |  |  |  |  |  |  |  |  |
+| Reddit |  | ✓ |  |  |  |  |  |  |  |  |  |  |
 
 Walmart is not currently available in Global Report.
 
@@ -445,7 +440,7 @@ Ask:
 
 > What Pacvue tools do you have access to?
 
-You should see the services in [What you get](#what-you-get) that your account is entitled to. A missing service usually means the account does not have that product, not a bad config. Rule MCP is Beta.
+You should see the services in [What you get](#what-you-get) that your account is entitled to. A missing service usually means the account does not have that product, not a bad config.
 
 ## Tool reference
 
@@ -598,23 +593,6 @@ The agent must show the exact changes and wait for your confirmation before `exe
 
 Supported retailers are in the [ads matrix](#ads). Not every campaign type on those retailers can be edited. The schema call is the source of truth for fields. On Amazon, one write request can contain only one ad product (Sponsored Products, Sponsored Brands, Sponsored Display, or Sponsored TV). Split mixed updates into separate actions.
 
-### Rule MCP
-
-Beta. Creating or changing a rule goes through a draft. The agent must preview the draft and wait for your confirmation before `commit_rule_draft`.
-
-| Tool | What it does |
-| --- | --- |
-| `list_rule_capabilities` | Platforms and rule types you can use. |
-| `get_rule_type_config` | Fields and constraints for one rule type. |
-| `list_rules` | Existing rules. |
-| `list_rule_drafts` | Open drafts. |
-| `open_rule_draft` | Start a create or edit draft. |
-| `get_rule_draft` | Read one draft. |
-| `update_rule_draft` | Change the draft, save it, or preview it. |
-| `commit_rule_draft` | Apply a confirmed draft. |
-
-Rule MCP is available on Amazon Ads, Walmart, and Target. It is not available on Amazon DSP. Call `list_rule_capabilities` for the objects a platform actually supports (campaign, targeting, placement, ad group, product, keyword, and so on).
-
 ### SOV Management MCP
 
 `manage_sov_category` creates, updates, or deletes a keyword SOV category. The agent must read the current category with `list_sov_material`, restate the change, and wait for your confirmation. Delete requires `confirm=true` after you approve that specific category.
@@ -701,7 +679,7 @@ A required filter or config was skipped. Tell the agent the platform, profile, a
 
 ### A toolset is missing
 
-Restart the client and confirm the token or OAuth session. The tool list is also limited to products and retailers on your Console account. Rule MCP is Beta and can be absent when the account is not in that beta.
+Restart the client and confirm the token or OAuth session. The tool list is also limited to products and retailers on your Console account.
 
 ### `execute_query` rejected an empty scope
 
