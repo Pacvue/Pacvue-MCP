@@ -10,18 +10,6 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 
 - [What you get](#what-you-get)
 - [Choosing the right toolset](#choosing-the-right-toolset)
-- [Retailer support](#retailer-support)
-  - [Ads](#ads)
-  - [Commerce](#commerce)
-  - [Amazon Commerce Data Query scope](#amazon-commerce-data-query-scope)
-  - [Walmart Commerce Data Query scope](#walmart-commerce-data-query-scope)
-  - [Target Commerce Data Query scope](#target-commerce-data-query-scope)
-- [Report coverage](#report-coverage)
-  - [Amazon Ads](#amazon-ads)
-  - [Amazon DSP](#amazon-dsp)
-  - [Walmart](#walmart)
-  - [Other ads retailers](#other-ads-retailers)
-  - [Commerce reports](#commerce-reports)
 - [Endpoint](#endpoint)
 - [Authentication](#authentication)
   - [Option A — API Token](#option-a--api-token)
@@ -79,7 +67,7 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 
 Report MCP is asynchronous: up to 150,000 rows, and the download link is valid for 24 hours. Data Query, SOV Query, Budget, Event, Creative Hub, Global Report, and Market Intelligence return JSON in the chat. Campaign, SOV Management, and AMC writes must be confirmed with you before the agent submits them.
 
-New retailers and fields are picked up at runtime. The matrices below are the current footprint, not a frozen catalog.
+Which retailers, reports, and fields you can use is decided at runtime from your Console entitlements. There is no static catalog in this document.
 
 ## Choosing the right toolset
 
@@ -101,143 +89,6 @@ Use one toolset per task. Do not mix a file export with an in-chat query, or a r
 | Create or edit campaigns, bids, budgets, targets | Campaign Management MCP |
 | Add, change, or remove an SOV category | SOV Management MCP |
 | Which client should this run against | Authorization MCP |
-
-## Retailer support
-
-✓ means the service is available on that retailer. A blank cell means it is not available. You still only see retailers your Console account can access.
-
-ChatGPT, TikTok, Reddit, and Pinterest currently expose **materials** in Data Query (accounts, campaigns, and related objects), not the full performance query used on the retail-media platforms.
-
-### Ads
-
-| Retailer | Report | Data Query | Brand Analytics | SOV | Budget | Event | Creative Hub | Global Report | Market Intelligence | Campaign Mgmt | AMC | SOV Mgmt |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Amazon Ads | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Amazon DSP | ✓ | ✓ |  |  | ✓ |  | ✓ | ✓ |  | ✓ | ✓ |  |
-| Walmart | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |  | ✓ |  | ✓ |
-| Target | ✓ | ✓ |  | ✓ | ✓ | ✓ |  | ✓ |  | ✓ |  | ✓ |
-| Instacart | ✓ | ✓ |  | ✓ | ✓ |  | ✓ | ✓ |  | ✓ |  | ✓ |
-| Kroger | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
-| Criteo | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
-| Citrus | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
-| Bol | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
-| Chewy | ✓ | ✓ |  | ✓ | ✓ |  |  |  |  | ✓ |  | ✓ |
-| DoorDash | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
-| Sam's Club | ✓ | ✓ |  | ✓ | ✓ |  |  | ✓ |  | ✓ |  | ✓ |
-| Kevel |  |  |  | ✓ |  |  |  |  |  |  |  | ✓ |
-| Walmart DSP |  |  |  |  |  |  |  |  |  | ✓ |  |  |
-| Roku |  |  |  |  |  |  |  |  |  | ✓ |  |  |
-| Pacvue Direct |  |  |  |  |  |  |  |  |  | ✓ |  |  |
-| Google |  |  |  |  |  |  |  |  |  | ✓ |  |  |
-| Meta |  |  |  |  |  |  |  |  |  | ✓ |  |  |
-| TikTok |  | ✓ |  |  |  |  | ✓ |  |  |  |  |  |
-| ChatGPT |  | ✓ |  |  |  |  |  |  |  |  |  |  |
-| Pinterest |  | ✓ |  |  |  |  |  |  |  |  |  |  |
-| Reddit |  | ✓ |  |  |  |  |  |  |  |  |  |  |
-
-Walmart is not currently available in Global Report.
-
-### Commerce
-
-| Retailer | Report | Data Query | Global Report |
-| --- | --- | --- | --- |
-| Amazon Commerce — Vendor (1P) | ✓ | ✓ | ✓ |
-| Amazon Commerce — Seller (3P) | ✓ | ✓ | ✓ |
-| Walmart Commerce — Vendor (1P) | ✓ | ✓ |  |
-| Target Commerce — Vendor (1P) |  | ✓ |  |
-
-Seller (3P) commerce for Walmart and Target is not available. Target Commerce is not available in Report MCP.
-
-### Amazon Commerce Data Query scope
-
-Vendor and Seller route to different platform keys: `commerce-amazon-vendor` and `commerce-amazon-seller`.
-
-| Category | Vendor (1P) | Seller (3P) |
-| --- | --- | --- |
-| Sales | ✓ (Manufacturing + Sourcing view) | ✓ |
-| Ads | ✓ | ✓ |
-| Profitability (margin / COGS) | ✓ | ✓ |
-| Inventory | ✓ (Manufacturing + Sourcing view) | ✓ |
-| FBA inventory detail |  | ✓ |
-| Content score | ✓ | ✓ |
-| Buy Box / pricing | ✓ | ✓ |
-| Promotion | ✓ | ✓ |
-| Coupon | ✓ | ✓ |
-| Subscribe & Save (SnS) | ✓ | ✓ |
-| Alerts | ✓ | ✓ |
-| PO (purchase orders) | ✓ |  |
-| SOA tracker | ✓ |  |
-| Order (order line items) |  | ✓ |
-| Competitive Tracker | ✓ | ✓ |
-| Forecast | ✓ | ✓ |
-| Customer Feedback | ✓ | ✓ |
-| Search Insight | ✓ | ✓ |
-| BSR ranking | ✓ | ✓ |
-| Real-time | ✓ | ✓ (hourly granularity) |
-
-Vendor Sales and Inventory default to the Manufacturing view. Switch Sales to Sourcing via `options.reportType` (for example `sourcing_retail`). Inventory exposes both views as separate measure sets. Both are discoverable through `fetch_query_schema`.
-
-### Walmart Commerce Data Query scope
-
-Walmart Commerce is Vendor (1P) only, under `commerce-walmart-vendor`.
-
-| Category | Vendor (1P) |
-| --- | --- |
-| Sales | ✓ |
-| Inventory | ✓ |
-| Buy Box / pricing | ✓ |
-
-Resolve scope via `materialType=vendor_account`, then pass the IDs in `execute_query.profileIds`.
-
-### Target Commerce Data Query scope
-
-Target Commerce is Vendor (1P) only, under `commerce-target`.
-
-| Category | Vendor (1P) |
-| --- | --- |
-| Sales | ✓ |
-| RMS (Roundel ads) | ✓ |
-| Inventory | ✓ |
-| PO (purchase orders) | ✓ |
-
-Scope is your Pacvue client and is applied from the credential. No `fetch_query_materials` call and no `profileIds` are required.
-
-## Report coverage
-
-Call `fetch_report_list` for the live catalog. These are the report levels currently wired.
-
-### Amazon Ads
-
-Profile, Campaign Tag, Campaign, Ad Group, Placement, Product Ads, Targeting, Query, Purchased Product, Product Eligibility, ASIN, SB Category Benchmark, SB Ads, Amazon Attribution, Portfolio, SOV.
-
-### Amazon DSP
-
-Campaign, Inventory, Audience, Product, Tag.
-
-### Walmart
-
-Profile, Campaign Tag, Campaign, Ad Group, Creative, Keyword, Tactic, Item, Item Health, Item Advanced Insight, Page Type, Placement, Platform, Query, Impression Share, Purchased Item, SOV, Hourly, Campaign Out of Daily Budget, Sales Lift, New Buyer, Category Intelligence.
-
-### Other ads retailers
-
-| Retailer | Report levels |
-| --- | --- |
-| Instacart | Profile, Campaign Tag, Campaign, Ad Group, Product Ads, Keyword, SOV, Promotion Group, Promotion, Promotion Product, Share of Shelf |
-| Criteo | Profile, Campaign Tag, Campaign, Line Item, Product, Keyword, Page Type, Platform, SOV, Attributed Transaction, Hourly |
-| Target | Profile, Campaign Tag, Campaign, Line Item, Product, Keyword, Page Type, Platform, SOV, Attributed Transaction, Hourly |
-| Kroger | Profile, Campaign Tag, Campaign, Ad Group, Product, SOV, Targeting, Campaign Hourly |
-| Chewy | Profile, Campaign Tag, Campaign, Product, Targeting, SOV, Purchased Product |
-| Citrus | Team, Campaign Tag, Campaign, Placement, Keyword, Product, SOV, Advanced, Hourly |
-| DoorDash | Profile, Campaign Tag, Campaign, Ad Group, Product Ads, Keyword, Product, Placement |
-| Sam's Club | Profile, Campaign Tag, Campaign, Ad Group, Keyword, Product Ads, Page Type, Placement, Platform, Query, SOV, Campaign Hourly, Campaign Out of Budget |
-| Bol | Profile, Campaign Tag, Campaign, Ad Group, Targeting, Product Ads, Query, SOV, Product |
-
-### Commerce reports
-
-| Retailer | Reports |
-| --- | --- |
-| Amazon Commerce | Sales & Inventory (vendor), Sales & Inventory (seller), Supply Chain (vendor), Profitability (vendor), Profitability (seller), Price Tracker, Consumption Forecast (vendor), Buy Box Tracker (vendor), Buy Box Tracker (seller) |
-| Walmart Commerce | Sales (vendor), Inventory (vendor), Sales & Inventory (Marketplace) |
 
 ## Endpoint
 
@@ -479,7 +330,7 @@ Flow: `list_query_platforms` → `fetch_query_list` → `fetch_query_schema` →
 - Walmart Commerce → `commerce-walmart-vendor` → `vendor_account` → `profileIds`
 - Target Commerce → `commerce-target` → scope comes from the credential
 
-Wired platform keys include `amazon-ads`, `amazon-dsp`, `walmart`, `instacart`, `target`, `kroger`, `criteo`, `citrus`, `bol`, `chewy`, `samsclub`, `doordash`, `commerce-amazon-vendor`, `commerce-amazon-seller`, `commerce-walmart-vendor`, and `commerce-target`. ChatGPT, TikTok, Reddit, and Pinterest are materials-only today.
+Call `list_query_platforms` for the platforms on this account. Do not assume a platform from a previous conversation.
 
 ### Brand Analytics
 
@@ -496,7 +347,7 @@ Flow: `list_sov_material` → `query_sov`.
 
 Required on `query_sov`: `platform`, `tab` (`brand`, `keyword`, or `asin`), `categoryIds`, `startDate`, `endDate`.
 
-Amazon and Walmart support `deviceMode` values `Aggregated`, `Separated`, `Mobile`, `PC`, and `App`. The other SOV platforms support `Aggregated` only. Keyword tag filters work on Amazon, Walmart, Instacart, and Criteo. Walmart has a `zip_code` filter. Instacart, Criteo, Citrus, and DoorDash use `store` (`retailerIds`).
+`deviceMode` and extra filters depend on the platform. Take the allowed values from `list_sov_material` rather than assuming them.
 
 For a spreadsheet or a multi-tab ZIP, use Report MCP's SOV report instead of `query_sov`.
 
@@ -507,9 +358,7 @@ For a spreadsheet or a multi-tab ZIP, use Report MCP's SOV report instead of `qu
 | `list_budget_platforms` | Platforms, profile labels, and budget-line sub-types. |
 | `fetch_budget_vs_spend` | Monthly budget, spend, pacing, and utilization by profile, and by tag where the platform uses tags. |
 
-This is Budget Manager data, not an ad-performance report. Use Report MCP or Data Query MCP for campaign metrics.
-
-Platforms: Amazon, Walmart, Amazon DSP, Instacart, Criteo, Target, Kroger, Sam's Club, Chewy, Citrus, DoorDash, Bol.
+This is Budget Manager data, not an ad-performance report. Use Report MCP or Data Query MCP for campaign metrics. Call `list_budget_platforms` for the platforms on this account.
 
 Do not add spend across rows that use different currencies. The tool does not return FX rates.
 
@@ -591,7 +440,7 @@ The agent must show the exact changes and wait for your confirmation before `exe
 | `fetch_campaign_mgmt_materials` | Resolve profiles and parent entities to IDs. |
 | `execute_campaign_mgmt_actions` | Create, update, or delete. Results return in the response. |
 
-Supported retailers are in the [ads matrix](#ads). Not every campaign type on those retailers can be edited. The schema call is the source of truth for fields. On Amazon, one write request can contain only one ad product (Sponsored Products, Sponsored Brands, Sponsored Display, or Sponsored TV). Split mixed updates into separate actions.
+Call `list_campaign_mgmt_platforms` for the platforms you can change. Not every campaign type on a platform can be edited. The schema call is the source of truth for fields. On Amazon, one write request can contain only one ad product (Sponsored Products, Sponsored Brands, Sponsored Display, or Sponsored TV). Split mixed updates into separate actions.
 
 ### SOV Management MCP
 
