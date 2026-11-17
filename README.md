@@ -6,6 +6,60 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 
 > **Enterprise-managed clients (Claude, ChatGPT, and similar):** where connectors are governed at the workspace level, individual users may not be permitted to add Pacvue MCP as a Custom Connector. Please contact your IT administrator to have it provisioned for your organization.
 
+## Contents
+
+- [What you get](#what-you-get)
+- [Choosing the right toolset](#choosing-the-right-toolset)
+- [Retailer support](#retailer-support)
+  - [Ads](#ads)
+  - [Commerce](#commerce)
+  - [Amazon Commerce Data Query scope](#amazon-commerce-data-query-scope)
+  - [Walmart Commerce Data Query scope](#walmart-commerce-data-query-scope)
+  - [Target Commerce Data Query scope](#target-commerce-data-query-scope)
+- [Report coverage](#report-coverage)
+  - [Amazon Ads](#amazon-ads)
+  - [Amazon DSP](#amazon-dsp)
+  - [Walmart](#walmart)
+  - [Other ads retailers](#other-ads-retailers)
+  - [Commerce reports](#commerce-reports)
+- [Endpoint](#endpoint)
+- [Authentication](#authentication)
+  - [Option A — API Token](#option-a--api-token)
+  - [Option B — OAuth 2.0](#option-b--oauth-20)
+  - [More than one client](#more-than-one-client)
+- [Client setup](#client-setup)
+  - [Cursor](#cursor)
+  - [Claude Code](#claude-code)
+  - [Claude Desktop and Claude (claude.ai)](#claude-desktop-and-claude-claudeai)
+  - [ChatGPT](#chatgpt)
+  - [Other MCP clients](#other-mcp-clients)
+- [Verify](#verify)
+- [Tool reference](#tool-reference)
+  - [Report MCP](#report-mcp)
+  - [Data Query MCP](#data-query-mcp)
+  - [Brand Analytics](#brand-analytics)
+  - [SOV Query MCP](#sov-query-mcp)
+  - [Budget Manager MCP](#budget-manager-mcp)
+  - [Event MCP](#event-mcp)
+  - [Creative Hub MCP](#creative-hub-mcp)
+  - [Global Report MCP](#global-report-mcp)
+  - [AMC MCP](#amc-mcp)
+  - [Market Intelligence MCP](#market-intelligence-mcp)
+  - [Campaign Management MCP](#campaign-management-mcp)
+  - [Rule MCP](#rule-mcp)
+  - [SOV Management MCP](#sov-management-mcp)
+  - [Authorization MCP](#authorization-mcp)
+- [Example prompts](#example-prompts)
+- [Troubleshooting](#troubleshooting)
+  - [The browser opened the Pacvue MCP gateway page](#the-browser-opened-the-pacvue-mcp-gateway-page)
+  - [Claude Desktop shows `pacvue-mcp` as failed](#claude-desktop-shows-pacvue-mcp-as-failed-mcp-remote)
+  - [Connection drops after a week of inactivity](#connection-drops-after-a-week-of-inactivity)
+  - [`run_report` failed on a missing field](#run_report-failed-on-a-missing-field)
+  - [A toolset is missing](#a-toolset-is-missing)
+  - [`execute_query` rejected an empty scope](#execute_query-rejected-an-empty-scope)
+  - [The agent mixed toolsets](#the-agent-mixed-toolsets)
+- [Security and limits](#security-and-limits)
+
 ## What you get
 
 Tools are grouped into services. **GA** services are generally available. **Beta** services are available, with narrower platform coverage.
@@ -183,7 +237,7 @@ Profile, Campaign Tag, Campaign, Ad Group, Creative, Keyword, Tactic, Item, Item
 | Sam's Club | Profile, Campaign Tag, Campaign, Ad Group, Keyword, Product Ads, Page Type, Placement, Platform, Query, SOV, Campaign Hourly, Campaign Out of Budget |
 | Bol | Profile, Campaign Tag, Campaign, Ad Group, Targeting, Product Ads, Query, SOV, Product |
 
-### Commerce
+### Commerce reports
 
 | Retailer | Reports |
 | --- | --- |
