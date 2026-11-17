@@ -13,6 +13,7 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 - [Endpoint](#endpoint)
 - [Authentication](#authentication)
   - [Option A — API Token](#option-a--api-token)
+    - [Renew an expired token](#renew-an-expired-token)
   - [Option B — OAuth 2.0](#option-b--oauth-20)
   - [More than one client](#more-than-one-client)
 - [Client setup](#client-setup)
@@ -39,6 +40,7 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 - [Example prompts](#example-prompts)
 - [Troubleshooting](#troubleshooting)
   - [The browser opened the Pacvue MCP gateway page](#the-browser-opened-the-pacvue-mcp-gateway-page)
+  - [API token expired](#api-token-expired)
   - [Claude Desktop shows `pacvue-mcp` as failed](#claude-desktop-shows-pacvue-mcp-as-failed-mcp-remote)
   - [Connection drops after a week of inactivity](#connection-drops-after-a-week-of-inactivity)
   - [`run_report` failed on a missing field](#run_report-failed-on-a-missing-field)
@@ -115,7 +117,19 @@ You'll need a Pacvue Console account, and one of:
 4. **Copy the token immediately.** The full value (`pv_...`) is shown only once.
 5. Paste it into the MCP client as the `Authorization` header. No `Bearer` prefix. Use the raw token.
 
-To rotate or revoke a token, delete it on the same page. Up to 50 active tokens per user. Tokens are stored hash-only. Pacvue cannot recover a lost token.
+The expiry you choose is fixed. The token does not renew itself. When that date passes, the client can no longer call Pacvue until you create a new token and replace the old value. Up to 50 active tokens per user. Tokens are stored hash-only. Pacvue cannot extend or recover a token.
+
+#### Renew an expired token
+
+Do this when the expiry you set is reached, or a few days before.
+
+1. Sign in to the Pacvue Console and open **Settings → MCP**.
+2. Click **Create API Token**, choose a new expiry (max 180 days), and copy the new `pv_...` value immediately.
+3. Replace the old token in the MCP client config. Keep the raw token, with no `Bearer` prefix.
+4. Fully quit and restart the MCP client.
+5. Delete the expired token on the same Settings page.
+
+To revoke a token before it expires, delete it on that page. Deleting it does not create a replacement. You still need a new token in the client.
 
 ### Option B — OAuth 2.0
 
@@ -498,6 +512,10 @@ The agent discovers the schema at runtime. For a file export it polls until the 
 
 ## Troubleshooting
 
+### API token expired
+
+An API token stops working on the expiry date you chose when you created it. Nothing extends it automatically. Follow [Renew an expired token](#renew-an-expired-token): create a new token, paste it over the old `pv_...` value, restart the client, then delete the expired token.
+
 ### The browser opened the Pacvue MCP gateway page
 
 The gateway URL is an MCP endpoint, not a webpage. This usually means the API token is missing, expired, or revoked.
@@ -554,5 +572,5 @@ Restate the intent — file, in-chat answer, or a specific write — and start a
 | Report `taskId` | 24 hours |
 | Event MCP date range | 90 days |
 | API tokens per user | 50 |
-| API token lifetime | 180 days |
+| API token lifetime | The expiry you set, up to 180 days. Renew it when that date arrives. |
 | OAuth refresh token | 7-day sliding window |
