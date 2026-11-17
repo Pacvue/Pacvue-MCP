@@ -61,7 +61,7 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 | Data | Global Report MCP | Cross-retailer totals from Pacvue HQ Global Report | `fetch_global_report_options`, `query_global_report` |
 | Data | AMC MCP | Create an AMC report or audience directly in Amazon | `list_amc_instances`, `list_amc_advertisers`, `generate_amc_sql`, `generate_amc_report`, `generate_amc_audience`, `get_amc_job` |
 | Data | Market Intelligence MCP | Market share from Helium 10 Market 360 | `list_user_markets`, `get_market_statistics`, `get_market_trends`, `get_market_leaderboard`, `get_market_products` |
-| Action | Campaign Management MCP | Create or edit campaign settings. Not every platform or campaign type is supported | `list_campaign_mgmt_platforms`, `fetch_campaign_mgmt_schema`, `fetch_campaign_mgmt_materials`, `execute_campaign_mgmt_actions` |
+| Action | Campaign Management MCP | Create or edit campaign settings | `list_campaign_mgmt_platforms`, `fetch_campaign_mgmt_schema`, `fetch_campaign_mgmt_materials`, `execute_campaign_mgmt_actions` |
 | Action | SOV Management MCP | Create, update, or delete a keyword SOV category | `manage_sov_category` |
 | Account | Authorization MCP | List the Pacvue clients this credential can act on | `fetch_authorized_clients` |
 
@@ -440,7 +440,7 @@ The agent must show the exact changes and wait for your confirmation before `exe
 | `fetch_campaign_mgmt_materials` | Resolve profiles and parent entities to IDs. |
 | `execute_campaign_mgmt_actions` | Create, update, or delete. Results return in the response. |
 
-Call `list_campaign_mgmt_platforms` for the platforms you can change. Not every campaign type on a platform can be edited. The schema call is the source of truth for fields. On Amazon, one write request can contain only one ad product (Sponsored Products, Sponsored Brands, Sponsored Display, or Sponsored TV). Split mixed updates into separate actions.
+Call `list_campaign_mgmt_platforms` for the platforms you can change. The schema call is the source of truth for fields. On Amazon, one write request can contain only one ad product (Sponsored Products, Sponsored Brands, Sponsored Display, or Sponsored TV). Split mixed updates into separate actions.
 
 ### SOV Management MCP
 
