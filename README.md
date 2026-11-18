@@ -35,6 +35,7 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
   - [AMC MCP](#amc-mcp)
   - [Market Intelligence MCP](#market-intelligence-mcp)
   - [Campaign Management MCP](#campaign-management-mcp)
+  - [Tag Management MCP](#tag-management-mcp)
   - [SOV Management MCP](#sov-management-mcp)
   - [Authorization MCP](#authorization-mcp)
 - [Example prompts](#example-prompts)
@@ -64,10 +65,11 @@ One MCP server, no per-tool wiring. The agent only sees the toolsets your Pacvue
 | Data | AMC MCP | Create an AMC report or audience directly in Amazon | `list_amc_instances`, `list_amc_advertisers`, `generate_amc_sql`, `generate_amc_report`, `generate_amc_audience`, `get_amc_job` |
 | Data | Market Intelligence MCP | Market share from Helium 10 Market 360 | `list_user_markets`, `get_market_statistics`, `get_market_trends`, `get_market_leaderboard`, `get_market_products` |
 | Action | Campaign Management MCP | Create or edit campaign settings | `list_campaign_mgmt_platforms`, `fetch_campaign_mgmt_schema`, `fetch_campaign_mgmt_materials`, `execute_campaign_mgmt_actions` |
+| Action | Tag Management MCP | Create and edit tags, and add or remove the items on a tag | `list_tag_capabilities`, `list_tags`, `query_tag_items`, `manage_tag`, `delete_tag`, `preview_tag_item_change`, `apply_tag_item_change` |
 | Action | SOV Management MCP | Create, update, or delete a keyword SOV category | `manage_sov_category` |
 | Account | Authorization MCP | List the Pacvue clients this credential can act on | `fetch_authorized_clients` |
 
-Report MCP is asynchronous: up to 150,000 rows, and the download link is valid for 24 hours. Data Query, SOV Query, Budget, Event, Creative Hub, Global Report, and Market Intelligence return JSON in the chat. Campaign, SOV Management, and AMC writes must be confirmed with you before the agent submits them.
+Report MCP is asynchronous: up to 150,000 rows, and the download link is valid for 24 hours. Data Query, SOV Query, Budget, Event, Creative Hub, Global Report, and Market Intelligence return JSON in the chat. Campaign, Tag Management, SOV Management, and AMC writes must be confirmed with you before the agent submits them.
 
 Which retailers, reports, and fields you can use is decided at runtime from your Console entitlements. There is no static catalog in this document.
 
@@ -89,6 +91,7 @@ Use one toolset per task. Do not mix a file export with an in-chat query, or a r
 | Amazon AMC report or audience | AMC MCP |
 | Market share, trends, leaderboard, products | Market Intelligence MCP |
 | Create or edit campaigns, bids, budgets, targets | Campaign Management MCP |
+| Create a tag, or add and remove items on a tag | Tag Management MCP |
 | Add, change, or remove an SOV category | SOV Management MCP |
 | Which client should this run against | Authorization MCP |
 
@@ -456,6 +459,26 @@ The agent must show the exact changes and wait for your confirmation before `exe
 
 Call `list_campaign_mgmt_platforms` for the platforms you can change. The schema call is the source of truth for fields. On Amazon, one write request can contain only one ad product (Sponsored Products, Sponsored Brands, Sponsored Display, or Sponsored TV). Split mixed updates into separate actions.
 
+### Tag Management MCP
+
+Creates and edits tags, and adds or removes the campaigns, keywords, products, or other items bound to a tag. The agent must restate the change and wait for your confirmation before `manage_tag`, `delete_tag`, or `apply_tag_item_change`.
+
+| Tool | What it does |
+| --- | --- |
+| `list_tag_capabilities` | Platforms and tag types you can use, and what each one allows. Call this first. |
+| `list_tags` | List or look up tags for one platform and tag type. |
+| `query_tag_items` | Items on a tag, or the tags on an item. |
+| `manage_tag` | Create tags, or rename, set a target, or change the owner of one tag. |
+| `delete_tag` | Delete one tag. Deleting a parent also deletes its sub tags and their item bindings. |
+| `preview_tag_item_change` | Dry run of adding or removing items. Nothing is written. Returns a `changeToken`. |
+| `apply_tag_item_change` | Apply the preview you confirmed, using that `changeToken`. |
+
+Call `list_tag_capabilities` for the platforms and tag types on your account. Take ids and item fields from that response.
+
+To change which items are on a tag: `list_tag_capabilities` → `list_tags` or `query_tag_items` → `preview_tag_item_change` → you confirm the plan → `apply_tag_item_change`. There is no apply without a preview. The `changeToken` expires 15 minutes after the preview. If it expires, or the plan no longer matches what you saw, preview again.
+
+Deleting a tag is not reversible. The agent must show the tag name, any sub tags, and how many items are bound, and you must confirm that specific tag before `delete_tag` runs.
+
 ### SOV Management MCP
 
 `manage_sov_category` creates, updates, or deletes a keyword SOV category. The agent must read the current category with `list_sov_material`, restate the change, and wait for your confirmation. Delete requires `confirm=true` after you approve that specific category.
@@ -499,6 +522,13 @@ Using Pacvue Global Report, give me last month's total ad spend and ROAS across 
 ```
 Pause the Amazon Sponsored Products campaign "Brand - Exact" on my US profile.
 Show me the exact change and wait for my confirmation before submitting.
+```
+
+**Tag Management**
+
+```
+Add the campaign "Brand - Exact" to my campaign tag "Hero".
+Show me the preview and wait for my confirmation before applying.
 ```
 
 **AMC**
